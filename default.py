@@ -1,7 +1,6 @@
 import sys
 import os, datetime
 import xbmc, xbmcgui, xbmcaddon, xbmcplugin
-from Daemon import Daemon          
 from Utils import *
 if sys.version_info < (2, 7):
     import simplejson
