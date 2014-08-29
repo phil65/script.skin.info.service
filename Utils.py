@@ -134,6 +134,8 @@ def media_streamdetails(filename, streamdetails):
             info['videoresolution'] = "720"
         elif (video[0]['width'] >= 1281 or video[0]['height'] >= 721):
             info['videoresolution'] = "1080"
+        elif (video[0]['width'] >= 1921 or video[0]['height'] >= 1081):
+            info['videoresolution'] = "4k"
         else:
             info['videoresolution'] = ""
     elif (('dvd') in filename and not ('hddvd' or 'hd-dvd') in filename) or (filename.endswith('.vob' or '.ifo')):
