@@ -246,17 +246,23 @@ class Daemon:
         count = 1
         audio = results['result']['moviedetails']['streamdetails']['audio']
         subtitles = results['result']['moviedetails']['streamdetails']['subtitle']
+        subs = []
+        streams = []
         # Clear properties before setting new ones
         clear_properties()
         for item in audio:
+            streams.append(str(item['language']))
             self.wnd.setProperty('AudioLanguage.%d' % count, item['language'])
             self.wnd.setProperty('AudioCodec.%d' % count, item['codec'])
             self.wnd.setProperty('AudioChannels.%d' % count, str(item['channels']))
             count += 1
         count = 1
         for item in subtitles:
+            subs.append(str(item['language']))
             self.wnd.setProperty('SubtitleLanguage.%d' % count, item['language'])     
             count += 1
+        wnd.setProperty('SubtitleLanguage', " / ".join( subs ))
+        wnd.setProperty('AudioLanguage', " / ".join( streams ))
      #   self.cleared = False
          
 if ( __name__ == "__main__" ):
