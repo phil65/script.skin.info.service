@@ -100,7 +100,8 @@ class Daemon:
                             xbmc.sleep(100)
                             # stop iterating
                             break
-            elif xbmc.getCondVisibility("Window.IsActive(visualisation)"):
+         #   elif xbmc.getCondVisibility("Window.IsActive(visualisation)"):
+            elif False:
                 self.selecteditem = xbmc.getInfoLabel('MusicPlayer.Artist')
                 if (self.selecteditem != self.previousitem) and self.selecteditem:
                     self.previousitem = self.selecteditem
