@@ -54,22 +54,23 @@ class Daemon:
                 self.selecteditem = xbmc.getInfoLabel("ListItem.DBID")
                 if (self.selecteditem != self.previousitem):
                     self.previousitem = self.selecteditem
-                    if xbmc.getCondVisibility("!IsEmpty(ListItem.DBID) + Container.Content(artists)"):
-                        self._set_artist_details(xbmc.getInfoLabel("ListItem.DBID"))
-                        log("setting movieset labels")
-                    elif xbmc.getCondVisibility("!IsEmpty(ListItem.DBID) + Container.Content(albums)"):
-                        self._set_album_details(xbmc.getInfoLabel("ListItem.DBID"))
-                        log("setting movieset labels")                        
-                    elif  xbmc.getCondVisibility("!IsEmpty(ListItem.DBID) + SubString(ListItem.Path,videodb://movies/sets/,left)"):
-                        self._set_movieset_details(xbmc.getInfoLabel("ListItem.DBID"))
-                    elif  xbmc.getCondVisibility("!IsEmpty(ListItem.DBID) + Container.Content(movies)"):
-                        self._set_movie_details(xbmc.getInfoLabel("ListItem.DBID"))    
-                    elif  xbmc.getCondVisibility("!IsEmpty(ListItem.DBID) + Container.Content(episodes)"):
-                        self._set_episode_details(xbmc.getInfoLabel("ListItem.DBID"))    
-                    elif  xbmc.getCondVisibility("!IsEmpty(ListItem.DBID) + Container.Content(musicvideos)"):
-                        self._set_musicvideo_details(xbmc.getInfoLabel("ListItem.DBID"))    
-                    else:
-                        clear_properties()
+                    if self.selecteditem > -1:
+                        if xbmc.getCondVisibility("Container.Content(artists)"):
+                            self._set_artist_details(self.selecteditem)
+                            log("setting movieset labels")
+                        elif xbmc.getCondVisibility("Container.Content(albums)"):
+                            self._set_album_details(self.selecteditem)
+                            log("setting movieset labels")                        
+                        elif  xbmc.getCondVisibility("SubString(ListItem.Path,videodb://movies/sets/,left)"):
+                            self._set_movieset_details(self.selecteditem)
+                        elif  xbmc.getCondVisibility("Container.Content(movies)"):
+                            self._set_movie_details(self.selecteditem)    
+                        elif  xbmc.getCondVisibility("Container.Content(episodes)"):
+                            self._set_episode_details(self.selecteditem)    
+                        elif  xbmc.getCondVisibility("Container.Content(musicvideos)"):
+                            self._set_musicvideo_details(self.selecteditem)    
+                        else:
+                            clear_properties()
             elif xbmc.getCondVisibility("Container.Content(years)"):
                 self._detail_selector("year")            
             elif xbmc.getCondVisibility("Container.Content(genres)"):
@@ -110,6 +111,7 @@ class Daemon:
                     Artist_mbid = GetMusicBrainzIdFromNet(self.selecteditem)
                     passDataToSkin('SimilarArtistsInLibrary', None, self.prop_prefix)
                     passDataToSkin('SimilarArtists', GetSimilarArtistsInLibrary(Artist_mbid), self.prop_prefix)
+                    xbmc.sleep(2000)
             elif xbmc.getCondVisibility('Window.IsActive(screensaver)'):
                 xbmc.sleep(1000)
             else:
