@@ -1,17 +1,20 @@
 import sys
-import os, datetime
-import xbmc, xbmcgui, xbmcaddon, xbmcplugin
+import os
+import datetime
+import xbmc
+import xbmcgui
+import xbmcaddon
 from Utils import *
 if sys.version_info < (2, 7):
     import simplejson
 else:
     import json as simplejson
-    
 
-__addon__        = xbmcaddon.Addon()
-__addonid__      = __addon__.getAddonInfo('id')
+
+__addon__ = xbmcaddon.Addon()
+__addonid__ = __addon__.getAddonInfo('id')
 __addonversion__ = __addon__.getAddonInfo('version')
-__language__     = __addon__.getLocalizedString
+__language__ = __addon__.getLocalizedString
 
 
 TrackTitle = None
@@ -19,17 +22,20 @@ AdditionalParams = []
 Window = 10000
 extrathumb_limit = 4
 extrafanart_limit = 10
-Addon_Data_Path = os.path.join( xbmc.translatePath("special://profile/addon_data/%s" % __addonid__ ).decode("utf-8") )
-Skin_Data_Path = os.path.join( xbmc.translatePath("special://profile/addon_data/%s" % xbmc.getSkinDir() ).decode("utf-8") )
+Addon_Data_Path = os.path.join(xbmc.translatePath("special://profile/addon_data/%s" % __addonid__).decode("utf-8"))
+Skin_Data_Path = os.path.join(xbmc.translatePath("special://profile/addon_data/%s" % xbmc.getSkinDir()).decode("utf-8"))
+
+
 class Daemon:
-    def __init__( self ):
-        log("version %s started" % __addonversion__ )
+
+    def __init__(self):
+        log("version %s started" % __addonversion__)
         self._init_vars()
         self.run_backend()
 
     def _init_vars(self):
-        self.window = xbmcgui.Window(10000) # Home Window
-        self.wnd = xbmcgui.Window(12003) # Video info dialog
+        self.window = xbmcgui.Window(10000)  # Home Window
+        self.wnd = xbmcgui.Window(12003)  # Video info dialog
         self.musicvideos = []
         self.movies = []
         self.id = None
@@ -39,8 +45,8 @@ class Daemon:
         self.silent = True
         self.prop_prefix = ""
         self.Artist_mbid = None
-        self.window.clearProperty('SongToMusicVideo.Path')            
-            
+        self.window.clearProperty('SongToMusicVideo.Path')
+
     def run_backend(self):
         self._stop = False
         self.previousitem = ""
@@ -60,21 +66,21 @@ class Daemon:
                             log("setting movieset labels")
                         elif xbmc.getCondVisibility("Container.Content(albums)"):
                             self._set_album_details(self.selecteditem)
-                            log("setting movieset labels")                        
-                        elif  xbmc.getCondVisibility("SubString(ListItem.Path,videodb://movies/sets/,left)"):
+                            log("setting movieset labels")
+                        elif xbmc.getCondVisibility("SubString(ListItem.Path,videodb://movies/sets/,left)"):
                             self._set_movieset_details(self.selecteditem)
-                        elif  xbmc.getCondVisibility("Container.Content(movies)"):
-                            self._set_movie_details(self.selecteditem)    
-                        elif  xbmc.getCondVisibility("Container.Content(episodes)"):
-                            self._set_episode_details(self.selecteditem)    
-                        elif  xbmc.getCondVisibility("Container.Content(musicvideos)"):
-                            self._set_musicvideo_details(self.selecteditem)    
+                        elif xbmc.getCondVisibility("Container.Content(movies)"):
+                            self._set_movie_details(self.selecteditem)
+                        elif xbmc.getCondVisibility("Container.Content(episodes)"):
+                            self._set_episode_details(self.selecteditem)
+                        elif xbmc.getCondVisibility("Container.Content(musicvideos)"):
+                            self._set_musicvideo_details(self.selecteditem)
                         else:
                             clear_properties()
             elif xbmc.getCondVisibility("Container.Content(years)"):
-                self._detail_selector("year")            
+                self._detail_selector("year")
             elif xbmc.getCondVisibility("Container.Content(genres)"):
-                self._detail_selector("genre")              
+                self._detail_selector("genre")
             elif xbmc.getCondVisibility("Container.Content(directors)"):
                 self._detail_selector("director")
             elif xbmc.getCondVisibility("Container.Content(actors)"):
@@ -84,7 +90,7 @@ class Daemon:
             elif xbmc.getCondVisibility("Container.Content(countries)"):
                 self._detail_selector("country")
             elif xbmc.getCondVisibility("Container.Content(tags)"):
-                self._detail_selector("tag")                       
+                self._detail_selector("tag")
             elif xbmc.getCondVisibility('Container.Content(songs)') and self.musicvideos:
                 # get artistname and songtitle of the selected item
                 self.selecteditem = xbmc.getInfoLabel('ListItem.DBID')
@@ -95,7 +101,7 @@ class Daemon:
                     self.window.clearProperty('SongToMusicVideo.Path')
                     # iterate through our musicvideos
                     for musicvideo in self.musicvideos:
-                        if self.selecteditem == musicvideo[0]:#needs fixing
+                        if self.selecteditem == musicvideo[0]:  # needs fixing
                             # match found, set the window property
                             self.window.setProperty('SongToMusicVideo.Path', musicvideo[2])
                             xbmc.sleep(100)
@@ -116,15 +122,15 @@ class Daemon:
                 xbmc.sleep(1000)
             else:
                 self.previousitem = ""
-                self.selecteditem = ""    
+                self.selecteditem = ""
                 clear_properties()
-                xbmc.sleep(500)     
+                xbmc.sleep(500)
             if xbmc.getCondVisibility("IsEmpty(Window(home).Property(skininfos_daemon_running))"):
                 clear_properties()
                 self._stop = True
-            xbmc.sleep(100)     
+            xbmc.sleep(100)
 
-    def _set_song_details( self, dbid ): #unused, needs fixing
+    def _set_song_details(self, dbid):  # unused, needs fixing
         try:
             b = ""
             a = datetime.datetime.now()
@@ -132,15 +138,14 @@ class Daemon:
             json_query = unicode(json_query, 'utf-8', errors='ignore')
             json_query = simplejson.loads(json_query)
             clear_properties()
-            if "result" in json_query and json_query['result'].has_key('musicvideos'):
+            if "result" in json_query and 'musicvideos' in json_query['result']:
                 set_movie_properties(json_query)
             b = datetime.datetime.now() - a
             log('Total time needed to request JSON and set properties for song: %s' % b)
-        except Exception, e:
+        except Exception as e:
             log(e)
-                
-                
-    def _set_artist_details( self, dbid ):
+
+    def _set_artist_details(self, dbid):
         try:
             b = ""
             a = datetime.datetime.now()
@@ -148,50 +153,50 @@ class Daemon:
             json_query = unicode(json_query, 'utf-8', errors='ignore')
             json_query = simplejson.loads(json_query)
             clear_properties()
-            if json_query['result'].has_key('albums'):
+            if 'albums' in json_query['result']:
                 set_artist_properties(json_query)
             b = datetime.datetime.now() - a
             log('Total time needed to request JSON and set properties for artist: %s' % b)
-        except Exception, e:
+        except Exception as e:
             log(e)
 
-    def _set_movie_details( self, dbid ):
+    def _set_movie_details(self, dbid):
         try:
             if xbmc.getCondVisibility('Container.Content(movies)') or self.type == "movie":
                 json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovieDetails", "params": {"properties": ["streamdetails","set","setid","cast"], "movieid":%s }, "id": 1}' % dbid)
                 json_query = unicode(json_query, 'utf-8', errors='ignore')
                 log(json_query)
                 json_response = simplejson.loads(json_query)
-                if json_response['result'].has_key('moviedetails'):
+                if 'moviedetails' in json_response['result']:
                     self._set_properties(json_response)
-        except Exception, e:
+        except Exception as e:
             log(e)
 
-    def _set_episode_details( self, dbid ):
+    def _set_episode_details(self, dbid):
         try:
             if xbmc.getCondVisibility('Container.Content(episodes)') or self.type == "episode":
                 json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodeDetails", "params": {"properties": ["streamdetails"], "episodeid":%s }, "id": 1}' % dbid)
                 json_query = unicode(json_query, 'utf-8', errors='ignore')
                 log(json_query)
                 json_response = simplejson.loads(json_query)
-                if json_response['result'].has_key('episodedetails'):
+                if 'episodedetails' in json_response['result']:
                     self._set_properties(json_response['result']['episodedetails']['streamdetails']['audio'], json_response['result']['episodedetails']['streamdetails']['subtitle'])
-        except Exception, e:
-            log(e)        
-                
-    def _set_musicvideo_details( self, dbid ):
+        except Exception as e:
+            log(e)
+
+    def _set_musicvideo_details(self, dbid):
         try:
             if xbmc.getCondVisibility('Container.Content(musicvideos)') or self.type == "musicvideo":
                 json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMusicVideoDetails", "params": {"properties": ["streamdetails"], "musicvideoid":%s }, "id": 1}' % dbid)
                 json_query = unicode(json_query, 'utf-8', errors='ignore')
                 log(json_query)
                 json_response = simplejson.loads(json_query)
-                if json_response['result'].has_key('musicvideodetails'):
+                if 'musicvideodetails' in json_response['result']:
                     self._set_properties(json_response['result']['musicvideodetails']['streamdetails']['audio'], json_response['result']['musicvideodetails']['streamdetails']['subtitle'])
-        except Exception, e:
-            log(e)        
-                
-    def _set_album_details( self, dbid ):
+        except Exception as e:
+            log(e)
+
+    def _set_album_details(self, dbid):
         try:
             b = ""
             a = datetime.datetime.now()
@@ -199,16 +204,14 @@ class Daemon:
             json_query = unicode(json_query, 'utf-8', errors='ignore')
             json_query = simplejson.loads(json_query)
             clear_properties()
-            if "result" in json_query and json_query['result'].has_key('songs'):
+            if "result" in json_query and 'songs' in json_query['result']:
                 set_album_properties(json_query)
             b = datetime.datetime.now() - a
             log('Total time needed to request JSON and set properties for album: %s' % b)
-        except Exception, e:
+        except Exception as e:
             log(e)
 
-                
-                
-    def _set_movieset_details( self, dbid ):
+    def _set_movieset_details(self, dbid):
         try:
             b = ""
             a = datetime.datetime.now()
@@ -216,15 +219,15 @@ class Daemon:
             json_query = unicode(json_query, 'utf-8', errors='ignore')
             json_query = simplejson.loads(json_query)
             clear_properties()
-            if "result" in json_query and json_query['result'].has_key('setdetails'):
+            if "result" in json_query and 'setdetails' in json_query['result']:
                 set_movie_properties(json_query)
             b = datetime.datetime.now() - a
             log('Total time needed to request JSON and set properties for set: %s' % b)
-        except Exception, e:
+        except Exception as e:
             log("Exception in _set_movieset_details:")
             log(e)
-                            
-    def _detail_selector( self, comparator):
+
+    def _detail_selector(self, comparator):
         self.selecteditem = xbmc.getInfoLabel("ListItem.Label")
         if (self.selecteditem != self.previousitem):
             if xbmc.getCondVisibility("!Stringcompare(ListItem.Label,..)"):
@@ -236,15 +239,15 @@ class Daemon:
                     if self.selecteditem in str(movie[comparator]):
                         log(movie)
                         self.window.setProperty('Detail.Movie.%i.Path' % (count), movie["file"])
-                        self.window.setProperty('Detail.Movie.%i.Art(fanart)' % (count), movie["art"].get('fanart',''))
-                        self.window.setProperty('Detail.Movie.%i.Art(poster)' % (count), movie["art"].get('poster','')) 
-                        count +=1
+                        self.window.setProperty('Detail.Movie.%i.Art(fanart)' % (count), movie["art"].get('fanart', ''))
+                        self.window.setProperty('Detail.Movie.%i.Art(poster)' % (count), movie["art"].get('poster', ''))
+                        count += 1
                     if count > 19:
                         break
             else:
                 clear_properties()
 
-    def _set_properties( self, results ):
+    def _set_properties(self, results):
         # Set language properties
         count = 1
         audio = results['result']['moviedetails']['streamdetails']['audio']
@@ -262,13 +265,13 @@ class Daemon:
         count = 1
         for item in subtitles:
             subs.append(str(item['language']))
-            self.wnd.setProperty('SubtitleLanguage.%d' % count, item['language'])     
+            self.wnd.setProperty('SubtitleLanguage.%d' % count, item['language'])
             count += 1
-        wnd.setProperty('SubtitleLanguage', " / ".join( subs ))
-        wnd.setProperty('AudioLanguage', " / ".join( streams ))
+        wnd.setProperty('SubtitleLanguage', " / ".join(subs))
+        wnd.setProperty('AudioLanguage', " / ".join(streams))
      #   self.cleared = False
-         
-if ( __name__ == "__main__" ):
+
+if (__name__ == "__main__"):
     try:
         params = dict( arg.split("=") for arg in sys.argv[1].split("&"))
     except:

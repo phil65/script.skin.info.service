@@ -50,7 +50,8 @@ def create_channel_list():
         return json_query
     else:
         return False
-                      
+
+
 def GetXBMCArtists():
     filename = Addon_Data_Path + "/XBMCartists.txt"
     if xbmcvfs.exists(filename) and time.time() - os.path.getmtime(filename) < 0:
@@ -59,15 +60,16 @@ def GetXBMCArtists():
         json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioLibrary.GetArtists", "params": {"properties": ["musicbrainzartistid"]}, "id": 1}')
         json_query = unicode(json_query, 'utf-8', errors='ignore')
         json_query = simplejson.loads(json_query)
-        save_to_file(json_query,"XBMCartists",Addon_Data_Path)
+        save_to_file(json_query, "XBMCartists", Addon_Data_Path)
         return json_query
-            
+
+
 def GetSimilarArtistsInLibrary(id):
     from OnlineMusicInfo import GetSimilarById
     simi_artists = GetSimilarById(id)
-    if simi_artists == None:
-         log('Last.fm didn\'t return proper response')
-         return None
+    if simi_artists is None:
+        log('Last.fm didn\'t return proper response')
+        return None
     xbmc_artists = GetXBMCArtists()
     artists = []
     for (count, simi_artist) in enumerate(simi_artists):
@@ -80,26 +82,27 @@ def GetSimilarArtistsInLibrary(id):
                 json_query = unicode(json_query, 'utf-8', errors='ignore')
                 json_response = simplejson.loads(json_query)
                 item = json_response["result"]["artistdetails"]
-                newartist = {"Title"       : item['label'],
-                             "Genre"       : " / ".join(item['genre']),
-                             "Thumb"       : item['thumbnail'], #remove
-                             "Fanart"      : item['fanart'], #remove
-                             "Art(thumb)"  : item['thumbnail'],
-                             "Art(fanart)" : item['fanart'],
-                             "Description" : item['description'],
-                             "Born"        : item['born'],
-                             "Died"        : item['died'],
-                             "Formed"      : item['formed'],
-                             "Disbanded"   : item['disbanded'],
-                             "YearsActive" : " / ".join(item['yearsactive']),
-                             "Style"       : " / ".join(item['style']),
-                             "Mood"        : " / ".join(item['mood']),
-                             "Instrument"  : " / ".join(item['instrument']),
-                             "LibraryPath" : 'musicdb://artists/' + str(item['artistid']) + '/' }                         
+                newartist = {"Title": item['label'],
+                             "Genre": " / ".join(item['genre']),
+                             "Thumb": item['thumbnail'],  # remove
+                             "Fanart": item['fanart'],  # remove
+                             "Art(thumb)": item['thumbnail'],
+                             "Art(fanart)": item['fanart'],
+                             "Description": item['description'],
+                             "Born": item['born'],
+                             "Died": item['died'],
+                             "Formed": item['formed'],
+                             "Disbanded": item['disbanded'],
+                             "YearsActive": " / ".join(item['yearsactive']),
+                             "Style": " / ".join(item['style']),
+                             "Mood": " / ".join(item['mood']),
+                             "Instrument": " / ".join(item['instrument']),
+                             "LibraryPath": 'musicdb://artists/' + str(item['artistid']) + '/'}
                 artists.append(newartist)
     log('%i of %i artists found in last.FM is in XBMC database' % (len(artists), len(simi_artists)))
-    return artists    
-            
+    return artists
+
+
 def create_light_movielist():
     # if xbmcvfs.exists(filename) and time.time() - os.path.getmtime(filename) < 1:
         # return read_from_file(filename)
@@ -114,7 +117,8 @@ def create_light_movielist():
         b = datetime.datetime.now() - a
         log('Processing Time for save light movielist: %s' % b)
         return json_query
-                    
+
+
 def media_streamdetails(filename, streamdetails):
     info = {}
     video = streamdetails['video']
@@ -124,17 +128,17 @@ def media_streamdetails(filename, streamdetails):
     elif video:
         videowidth = video[0]['width']
         videoheight = video[0]['height']
-        if (video[0]['width'] <= 720 and video[0]['height'] <= 480):
+        if (videowidth <= 720 and videoheight <= 480):
             info['videoresolution'] = "480"
-        elif (video[0]['width'] <= 768 and video[0]['height'] <= 576):
+        elif (videowidth <= 768 and videoheight <= 576):
             info['videoresolution'] = "576"
-        elif (video[0]['width'] <= 960 and video[0]['height'] <= 544):
+        elif (videowidth <= 960 and videoheight <= 544):
             info['videoresolution'] = "540"
-        elif (video[0]['width'] <= 1280 and video[0]['height'] <= 720):
+        elif (videowidth <= 1280 and videoheight <= 720):
             info['videoresolution'] = "720"
-        elif (video[0]['width'] >= 1281 or video[0]['height'] >= 721):
+        elif (videowidth >= 1281 or videoheight >= 721):
             info['videoresolution'] = "1080"
-        elif (video[0]['width'] >= 1921 or video[0]['height'] >= 1081):
+        elif (videowidth >= 1921 or videoheight >= 1081):
             info['videoresolution'] = "4k"
         else:
             info['videoresolution'] = ""
@@ -168,7 +172,8 @@ def media_streamdetails(filename, streamdetails):
         info['audiocodec'] = ''
         info['audiochannels'] = ''
     return info
-    
+
+
 def GetXBMCAlbums():
     albums = []        
     json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbums", "params": {"properties": ["title"]}, "id": 1}')
@@ -178,7 +183,8 @@ def GetXBMCAlbums():
         return json_query['result']['albums']
     else:
         return []
-    
+
+
 def media_path(path):
     # Check for stacked movies
     try:
@@ -196,13 +202,15 @@ def media_path(path):
     else:
         path = [path]
     return path[0]
-        
+
+
 def log(txt):
     if isinstance(txt, str):
         txt = txt.decode("utf-8")
     message = u'%s: %s' % (__addonid__, txt)
     xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGDEBUG)
-        
+
+
 def save_to_file(content, filename, path = "" ):
     import xbmcvfs
     if not xbmcvfs.exists(path):
@@ -213,7 +221,8 @@ def save_to_file(content, filename, path = "" ):
     simplejson.dump(content,text_file)
     text_file.close()
     return True
-        
+
+
 def read_from_file(path = "" ):
     import xbmcvfs
     log("trying to load " + path)
@@ -225,6 +234,7 @@ def read_from_file(path = "" ):
         return fc
     else:
         return False
+
 
 def GetStringFromUrl(encurl):
     doc = ""
@@ -243,12 +253,15 @@ def GetStringFromUrl(encurl):
             succeed += 1
     return ""
 
+
 def Notify(header, line='', line2='', line3=''):
     xbmc.executebuiltin('Notification(%s,%s,%s,%s)' % (header, line, line2, line3) )
-                                 
+
+
 def prettyprint(string):
     log(simplejson.dumps(string, sort_keys=True, indent=4, separators=(',', ': ')))
-    
+
+
 def set_artist_properties( audio ):
     count = 1
     latestyear = 0
