@@ -226,6 +226,23 @@ def read_from_file(path = "" ):
     else:
         return False
 
+def GetStringFromUrl(encurl):
+    doc = ""
+    succeed = 0
+    while succeed < 5:
+        try: 
+            req = urllib2.Request(encurl)
+            req.add_header('User-agent', 'XBMC/13.2 ( ptemming@gmx.net )')
+            res = urllib2.urlopen(req)
+            html = res.read()
+       #     log("URL String: " + html)
+            return html
+        except:
+            log("GetStringFromURL: could not get data from %s" % encurl)
+            xbmc.sleep(1000)
+            succeed += 1
+    return ""
+
 def Notify(header, line='', line2='', line3=''):
     xbmc.executebuiltin('Notification(%s,%s,%s,%s)' % (header, line, line2, line3) )
                                  
@@ -256,11 +273,12 @@ def set_artist_properties( audio ):
     window.setProperty('Artist.Albums.Count', str(audio['result']['limits']['total']))
     window.setProperty('Artist.Albums.Playcount', str(playcount))
 
-def set_album_properties( json_query ):
+
+def set_album_properties(json_query):
     count = 1
     duration = 0
     discnumber = 0
-    tracklist=""
+    tracklist = ""
     for item in json_query['result']['songs']:
         window.setProperty('Album.Song.%d.Title' % count, item['title'])
         tracklist += "[B]" + str(item['track']) + "[/B]: " + item['title'] + "[CR]"
@@ -270,12 +288,15 @@ def set_album_properties( json_query ):
             discnumber = item['disc']
         duration += item['duration']
         count += 1
+    minutes = duration / 60
+    seconds = duration % 60
     window.setProperty('Album.Songs.Discs', str(discnumber))
-    window.setProperty('Album.Songs.Duration', str(duration))
+    window.setProperty('Album.Songs.Duration', str(minutes) + ":" + str(seconds))
     window.setProperty('Album.Songs.Tracklist', tracklist)
     window.setProperty('Album.Songs.Count', str(json_query['result']['limits']['total']))
-    
-def set_movie_properties( json_query ):
+
+
+def set_movie_properties(json_query):
     count = 1
     runtime = 0
     writer = []
