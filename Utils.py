@@ -291,7 +291,7 @@ def set_album_properties(json_query):
     minutes = duration / 60
     seconds = duration % 60
     window.setProperty('Album.Songs.Discs', str(discnumber))
-    window.setProperty('Album.Songs.Duration', str(minutes) + ":" + str(seconds))
+    window.setProperty('Album.Songs.Duration', str(minutes).zfill(2) + ":" + str(seconds).zfill(2))
     window.setProperty('Album.Songs.Tracklist', tracklist)
     window.setProperty('Album.Songs.Count', str(json_query['result']['limits']['total']))
 
