@@ -65,7 +65,6 @@ class Daemon:
                     else:
                         clear_properties()
             elif xbmc.getCondVisibility("Container.Content(seasons)"):
-                log(xbmc.getInfoLabel("ListItem.Icon"))
                 self.window.setProperty("SeasonPoster", xbmc.getInfoLabel("ListItem.Icon"))
             elif xbmc.getCondVisibility("Container.Content(years)"):
                 self._detail_selector("year")
