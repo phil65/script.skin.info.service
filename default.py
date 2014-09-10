@@ -39,8 +39,6 @@ class Daemon:
     def run_backend(self):
         self._stop = False
         self.previousitem = ""
-        self.previousartist = ""
-        self.previoussong = ""
         log("starting backend")
         self.musicvideos = create_musicvideo_list()
         self.movies = create_movie_list()
@@ -148,14 +146,17 @@ class Daemon:
             json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodeDetails", "params": {"properties": ["streamdetails","tvshowid","season"], "episodeid":%s }, "id": 1}' % dbid)
             json_query = unicode(json_query, 'utf-8', errors='ignore')
             json_response = simplejson.loads(json_query)
-            prettyprint(json_response)
             if 'episodedetails' in json_response['result']:
                 self._set_properties(json_response['result']['episodedetails'])
-                # tvshowid = json_response['result']['episodedetails']['tvshowid']
-                # json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetSeasons", "params": {"properties": ["thumbnail"], "tvshowid":%s }, "id": 1}' % tvshowid)
-                # json_query = unicode(json_query, 'utf-8', errors='ignore')
-                # json_response = simplejson.loads(json_query)
-                # prettyprint(json_response)
+                seasonnumber = json_response['result']['episodedetails']['season']
+                tvshowid = json_response['result']['episodedetails']['tvshowid']
+                json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetSeasons", "params": {"properties": ["thumbnail"], "tvshowid":%s }, "id": 1}' % tvshowid)
+                json_query = unicode(json_query, 'utf-8', errors='ignore')
+                json_response = simplejson.loads(json_query)
+                prettyprint(json_response)
+                for season in json_response["result"]["seasons"]:
+                    if season["label"].split(" ")[-1] == str(seasonnumber):
+                        self.window.setProperty('SeasonPoster', season["thumbnail"])
 
     def _set_musicvideo_details(self, dbid):
         if xbmc.getCondVisibility('Container.Content(musicvideos)') or self.type == "musicvideo":
