@@ -234,9 +234,7 @@ class Daemon:
                 clear_properties()
                 count = 1
                 for movie in self.movies["result"]["movies"]:
-                    log(comparator)
                     if self.selecteditem in str(movie[comparator]):
-                        log(movie)
                         self.window.setProperty('Detail.Movie.%i.Path' % (count), movie["file"])
                         self.window.setProperty('Detail.Movie.%i.Art(fanart)' % (count), movie["art"].get('fanart', ''))
                         self.window.setProperty('Detail.Movie.%i.Art(poster)' % (count), movie["art"].get('poster', ''))
