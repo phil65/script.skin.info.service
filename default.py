@@ -161,40 +161,39 @@ class Daemon:
             log(e)
 
     def _set_movie_details(self, dbid):
-        try:
-            if xbmc.getCondVisibility('Container.Content(movies)') or self.type == "movie":
-                json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovieDetails", "params": {"properties": ["streamdetails","set","setid","cast"], "movieid":%s }, "id": 1}' % dbid)
-                json_query = unicode(json_query, 'utf-8', errors='ignore')
-                log(json_query)
-                json_response = simplejson.loads(json_query)
-                if 'moviedetails' in json_response['result']:
-                    self._set_properties(json_response)
-        except Exception as e:
-            log(e)
+        if xbmc.getCondVisibility('Container.Content(movies)') or self.type == "movie":
+            json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovieDetails", "params": {"properties": ["streamdetails","set","setid","cast"], "movieid":%s }, "id": 1}' % dbid)
+            json_query = unicode(json_query, 'utf-8', errors='ignore')
+            log(json_query)
+            json_response = simplejson.loads(json_query)
+            if 'moviedetails' in json_response['result']:
+                self._set_properties(json_response['result']['moviedetails'])
+
 
     def _set_episode_details(self, dbid):
-        try:
-            if xbmc.getCondVisibility('Container.Content(episodes)') or self.type == "episode":
-                json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodeDetails", "params": {"properties": ["streamdetails"], "episodeid":%s }, "id": 1}' % dbid)
-                json_query = unicode(json_query, 'utf-8', errors='ignore')
-                log(json_query)
-                json_response = simplejson.loads(json_query)
-                if 'episodedetails' in json_response['result']:
-                    self._set_properties(json_response['result']['episodedetails']['streamdetails']['audio'], json_response['result']['episodedetails']['streamdetails']['subtitle'])
-        except Exception as e:
-            log(e)
+        if xbmc.getCondVisibility('Container.Content(episodes)') or self.type == "episode":
+            json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodeDetails", "params": {"properties": ["streamdetails","tvshowid","season"], "episodeid":%s }, "id": 1}' % dbid)
+            json_query = unicode(json_query, 'utf-8', errors='ignore')
+            json_response = simplejson.loads(json_query)
+            prettyprint(json_response)
+            if 'episodedetails' in json_response['result']:
+                self._set_properties(json_response['result']['episodedetails'])
+                # tvshowid = json_response['result']['episodedetails']['tvshowid']
+                # json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetSeasons", "params": {"properties": ["thumbnail"], "tvshowid":%s }, "id": 1}' % tvshowid)
+                # json_query = unicode(json_query, 'utf-8', errors='ignore')
+                # json_response = simplejson.loads(json_query)
+                # prettyprint(json_response)
+
 
     def _set_musicvideo_details(self, dbid):
-        try:
-            if xbmc.getCondVisibility('Container.Content(musicvideos)') or self.type == "musicvideo":
-                json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMusicVideoDetails", "params": {"properties": ["streamdetails"], "musicvideoid":%s }, "id": 1}' % dbid)
-                json_query = unicode(json_query, 'utf-8', errors='ignore')
-                log(json_query)
-                json_response = simplejson.loads(json_query)
-                if 'musicvideodetails' in json_response['result']:
-                    self._set_properties(json_response['result']['musicvideodetails']['streamdetails']['audio'], json_response['result']['musicvideodetails']['streamdetails']['subtitle'])
-        except Exception as e:
-            log(e)
+        if xbmc.getCondVisibility('Container.Content(musicvideos)') or self.type == "musicvideo":
+            json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMusicVideoDetails", "params": {"properties": ["streamdetails"], "musicvideoid":%s }, "id": 1}' % dbid)
+            json_query = unicode(json_query, 'utf-8', errors='ignore')
+            log(json_query)
+            json_response = simplejson.loads(json_query)
+            if 'musicvideodetails' in json_response['result']:
+                self._set_properties(json_response['result']['musicvideodetails'])
+
 
     def _set_album_details(self, dbid):
         try:
@@ -250,8 +249,8 @@ class Daemon:
     def _set_properties(self, results):
         # Set language properties
         count = 1
-        audio = results['result']['moviedetails']['streamdetails']['audio']
-        subtitles = results['result']['moviedetails']['streamdetails']['subtitle']
+        audio = results['streamdetails']['audio']
+        subtitles = results['streamdetails']['subtitle']
         subs = []
         streams = []
         # Clear properties before setting new ones
