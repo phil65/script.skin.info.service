@@ -52,10 +52,8 @@ class Daemon:
                     if (self.selecteditem is not "") and (self.selecteditem > -1):
                         if xbmc.getCondVisibility("Container.Content(artists)"):
                             self._set_artist_details(self.selecteditem)
-                            log("setting movieset labels")
                         elif xbmc.getCondVisibility("Container.Content(albums)"):
                             self._set_album_details(self.selecteditem)
-                            log("setting movieset labels")
                         elif xbmc.getCondVisibility("SubString(ListItem.Path,videodb://movies/sets/,left)"):
                             self._set_movieset_details(self.selecteditem)
                         elif xbmc.getCondVisibility("Container.Content(movies)"):
