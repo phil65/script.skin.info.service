@@ -119,6 +119,12 @@ def create_light_movielist():
         return json_query
 
 
+def Get_JSON_response(query):
+    json_response = xbmc.executeJSONRPC(query)
+    json_response = unicode(json_response, 'utf-8', errors='ignore')
+    return simplejson.loads(json_response)
+
+
 def media_streamdetails(filename, streamdetails):
     info = {}
     video = streamdetails['video']
