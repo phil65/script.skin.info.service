@@ -281,14 +281,14 @@ def set_artist_properties( audio ):
         window.setProperty('Artist.Album.%d.Label' % count, item['albumlabel'])
         if item['playcount']:
             playcount = playcount + item['playcount']
-        if item['year']:
-            if item['year'] > latestyear:
-                latestyear = item['year']
-            if firstyear == 0 or item['year'] < firstyear:
-                firstyear = item['year']
+        if item['year'] > latestyear:
+            latestyear = item['year']
+        if firstyear == 0 or item['year'] < firstyear:
+            firstyear = item['year']
         count += 1
-    window.setProperty('Artist.Albums.Newest', str(latestyear))
-    window.setProperty('Artist.Albums.Oldest', str(firstyear))
+    if firstyear > 0 and latestyear < 2020:    
+        window.setProperty('Artist.Albums.Newest', str(latestyear))
+        window.setProperty('Artist.Albums.Oldest', str(firstyear))
     window.setProperty('Artist.Albums.Count', str(audio['result']['limits']['total']))
     window.setProperty('Artist.Albums.Playcount', str(playcount))
 
