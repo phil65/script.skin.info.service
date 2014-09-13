@@ -64,7 +64,7 @@ class Daemon:
                             clear_properties()
                     else:
                         clear_properties()
-            elif xbmc.getCondVisibility("Container.Content(seasons)"):
+            elif xbmc.getCondVisibility("Container.Content(seasons) + !Window.IsActive(movieinformation)"):
                 self.window.setProperty("SeasonPoster", xbmc.getInfoLabel("ListItem.Icon"))
                 self.window.setProperty("SeasonID", xbmc.getInfoLabel("ListItem.DBID"))
                 self.window.setProperty("SeasonNumber", xbmc.getInfoLabel("ListItem.Season"))
