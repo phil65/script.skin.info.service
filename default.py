@@ -142,7 +142,7 @@ class Daemon:
     def _set_episode_details(self, dbid):
         json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodeDetails", "params": {"properties": ["streamdetails","tvshowid","season"], "episodeid":%s }, "id": 1}' % dbid)
         clear_properties()
-        if ('result' in json_response) and (episodedetails' in json_response['result']):
+        if ('result' in json_response) and ('episodedetails' in json_response['result']):
             self._set_properties(json_response['result']['episodedetails'])
             seasonnumber = json_response['result']['episodedetails']['season']
             tvshowid = json_response['result']['episodedetails']['tvshowid']
