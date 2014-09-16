@@ -124,25 +124,25 @@ class Daemon:
     def _set_song_details(self, dbid):  # unused, needs fixing
         json_response = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMusicVideos", "params": {"properties": ["artist", "file"], "sort": { "method": "artist" } }, "id": 1}')
         clear_properties()
-        if "result" in json_response and 'musicvideos' in json_response['result']:
+        if ("result" in json_response) and ('musicvideos' in json_response['result']):
             set_movie_properties(json_query)
 
     def _set_artist_details(self, dbid):
         json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbums", "params": {"properties": ["title", "year", "albumlabel", "playcount", "thumbnail"], "sort": { "method": "label" }, "filter": {"artistid": %s} }, "id": 1}' % dbid)
         clear_properties()
-        if "result" in json_response and 'albums' in json_response['result']:
+        if ("result" in json_response) and ('albums' in json_response['result']):
             set_artist_properties(json_response)
 
     def _set_movie_details(self, dbid):
         json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovieDetails", "params": {"properties": ["streamdetails","set","setid","cast"], "movieid":%s }, "id": 1}' % dbid)
         clear_properties()
-        if "result" in json_response and 'moviedetails' in json_response['result']:
+        if ("result" in json_response) and ('moviedetails' in json_response['result']):
             self._set_properties(json_response['result']['moviedetails'])
 
     def _set_episode_details(self, dbid):
         json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "VideoLibrary.GetEpisodeDetails", "params": {"properties": ["streamdetails","tvshowid","season"], "episodeid":%s }, "id": 1}' % dbid)
         clear_properties()
-        if 'episodedetails' in json_response['result']:
+        if ('result' in json_response) and (episodedetails' in json_response['result']):
             self._set_properties(json_response['result']['episodedetails'])
             seasonnumber = json_response['result']['episodedetails']['season']
             tvshowid = json_response['result']['episodedetails']['tvshowid']
@@ -154,19 +154,19 @@ class Daemon:
     def _set_musicvideo_details(self, dbid):
         json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMusicVideoDetails", "params": {"properties": ["streamdetails"], "musicvideoid":%s }, "id": 1}' % dbid)
         clear_properties()
-        if "result" in json_response and 'musicvideodetails' in json_response['result']:
+        if ("result" in json_response) and ('musicvideodetails' in json_response['result']):
             self._set_properties(json_response['result']['musicvideodetails'])
 
     def _set_album_details(self, dbid):
         json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "AudioLibrary.GetSongs", "params": {"properties": ["title", "track", "duration", "file", "lastplayed", "disc"], "sort": { "method": "label" }, "filter": {"albumid": %s} }, "id": 1}' % dbid)
         clear_properties()
-        if "result" in json_response and 'songs' in json_response['result']:
+        if ("result" in json_response) and ('songs' in json_response['result']):
             set_album_properties(json_response)
 
     def _set_movieset_details(self, dbid):
         json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovieSetDetails", "params": {"setid": %s, "properties": [ "thumbnail" ], "movies": { "properties":  [ "rating", "art", "file", "year", "director", "writer","genre" , "thumbnail", "runtime", "studio", "plotoutline", "plot", "country"], "sort": { "order": "ascending",  "method": "year" }} },"id": 1 }' % dbid)
         clear_properties()
-        if "result" in json_response and 'setdetails' in json_response['result']:
+        if ("result" in json_response) and ('setdetails' in json_response['result']):
             set_movie_properties(json_response)
 
     def _detail_selector(self, comparator):
