@@ -1,13 +1,20 @@
-import urllib, xbmc, xbmcaddon, xbmcgui, xbmcvfs, datetime, urllib2, os, sys, time
+import urllib
+import xbmc
+import xbmcaddon
+import xbmcgui
+import datetime
+import urllib2
+import os
+import sys
 if sys.version_info < (2, 7):
     import simplejson
 else:
     import json as simplejson
-    
-__addon__        = xbmcaddon.Addon()
-__addonid__      = __addon__.getAddonInfo('id')
-__language__     = __addon__.getLocalizedString
-Addon_Data_Path = os.path.join( xbmc.translatePath("special://profile/addon_data/%s" % __addonid__ ).decode("utf-8") )
+
+__addon__ = xbmcaddon.Addon()
+__addonid__ = __addon__.getAddonInfo('id')
+__language__ = __addon__.getLocalizedString
+Addon_Data_Path = os.path.join(xbmc.translatePath("special://profile/addon_data/%s" % __addonid__).decode("utf-8"))
 
 window = xbmcgui.Window(10000)
 wnd = xbmcgui.Window(12003)
@@ -16,71 +23,72 @@ locallist = []
 
 def create_musicvideo_list():
     musicvideos = []
-    json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMusicVideos", "params": {"properties": ["artist", "file"], "sort": { "method": "artist" } }, "id": 1}')
-    json_query = unicode(json_query, 'utf-8', errors='ignore')
-    json_response = simplejson.loads(json_query)
+    json_response = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMusicVideos", "params": {"properties": ["artist", "file"], "sort": { "method": "artist" } }, "id": 1}')
+    json_response = unicode(json_response, 'utf-8', errors='ignore')
+    json_response = simplejson.loads(json_response)
     if "result" in json_response and ("musicvideos" in json_response['result']):
         # iterate through the results
         for item in json_response['result']['musicvideos']:
             artist = item['artist']
             title = item['label']
             path = item['file']
-            musicvideos.append((artist,title,path))
+            musicvideos.append((artist, title, path))
         return musicvideos
     else:
         return False
-        
+
+
 def create_movie_list():
-    movies = []
-    json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"properties": ["year", "file", "art", "genre", "director","cast","studio","country","tag"], "sort": { "method": "random" } }, "id": 1}')
-    json_query = unicode(json_query, 'utf-8', errors='ignore')
-    json_query = simplejson.loads(json_query)
-    if json_query['result'] != None and "movies" in json_query["result"]:
-        return json_query
+    json_response = xbmc.executeJSONRPC(
+        '{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"properties": ["year", "file", "art", "genre", "director","cast","studio","country","tag"], "sort": { "method": "random" } }, "id": 1}')
+    json_response = unicode(json_response, 'utf-8', errors='ignore')
+    json_response = simplejson.loads(json_response)
+    if json_response['result'] is not None and "movies" in json_response["result"]:
+        return json_response
     else:
         return False
-            
+
+
 def create_channel_list():
-    channels = []
-    json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "PVR.GetChannels", "params": {"properties": ["thumbnail","channeltype", "hidden", "locked", "channel", "lastplayed"], "channelgroupid": "alltv" }, "id": 1}')
-    json_query = unicode(json_query, 'utf-8', errors='ignore')
-    json_query = simplejson.loads(json_query)
-#    prettyprint(json_query)
-    if json_query['result'] != None and "movies" in json_query["result"]:
-        return json_query
+    json_response = xbmc.executeJSONRPC(
+        '{"jsonrpc": "2.0", "method": "PVR.GetChannels", "params": {"properties": ["thumbnail","channeltype", "hidden", "locked", "channel", "lastplayed"], "channelgroupid": "alltv" }, "id": 1}')
+    json_response = unicode(json_response, 'utf-8', errors='ignore')
+    json_response = simplejson.loads(json_response)
+#    prettyprint(json_response)
+    if json_response['result'] is not None and "movies" in json_response["result"]:
+        return json_response
     else:
         return False
 
 
-def GetXBMCArtists():
-    filename = Addon_Data_Path + "/XBMCartists.txt"
-    if xbmcvfs.exists(filename) and time.time() - os.path.getmtime(filename) < 0:
-        return read_from_file(filename)
+def create_artist_list():
+    json_response = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioLibrary.GetArtists", "params": {"properties": ["musicbrainzartistid","fanart","thumbnail","genre"]}, "id": 1}')
+    json_response = unicode(json_response, 'utf-8', errors='ignore')
+    json_response = simplejson.loads(json_response)
+    prettyprint(json_response)
+    if "result" in json_response and "artists" in json_response['result']:
+        return json_response['result']['artists']
     else:
-        json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioLibrary.GetArtists", "params": {"properties": ["musicbrainzartistid"]}, "id": 1}')
-        json_query = unicode(json_query, 'utf-8', errors='ignore')
-        json_query = simplejson.loads(json_query)
-        save_to_file(json_query, "XBMCartists", Addon_Data_Path)
-        return json_query
+        return []
 
 
-def GetSimilarArtistsInLibrary(id):
+def GetSimilarArtistsInLibrary(id, db_artists):
     from OnlineMusicInfo import GetSimilarById
     simi_artists = GetSimilarById(id)
     if simi_artists is None:
         log('Last.fm didn\'t return proper response')
         return None
-    xbmc_artists = GetXBMCArtists()
     artists = []
     for (count, simi_artist) in enumerate(simi_artists):
-        for (count, xbmc_artist) in enumerate(xbmc_artists["result"]["artists"]):
-            if xbmc_artist['musicbrainzartistid'] != '':
-                if xbmc_artist['musicbrainzartistid'] == simi_artist['mbid']:
-                    artists.append(xbmc_artist)
-            elif xbmc_artist['artist'] == simi_artist['name']:
-                json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioLibrary.GetArtistDetails", "params": {"properties": ["genre", "description", "mood", "style", "born", "died", "formed", "disbanded", "yearsactive", "instrument", "fanart", "thumbnail"], "artistid": %s}, "id": 1}' % str(xbmc_artist['artistid']))
-                json_query = unicode(json_query, 'utf-8', errors='ignore')
-                json_response = simplejson.loads(json_query)
+        for (count, db_artist) in enumerate(db_artists["result"]["artists"]):
+            if db_artist['musicbrainzartistid'] != '':
+                if db_artist['musicbrainzartistid'] == simi_artist['mbid']:
+                    artists.append(db_artist)
+            elif db_artist['artist'] == simi_artist['name']:
+                json_response = db.executeJSONRPC(
+                    '{"jsonrpc": "2.0", "method": "AudioLibrary.GetArtistDetails", "params": {"properties": ["genre", "description", "mood", "style", "born", "died", "formed", "disbanded", "yearsactive", "instrument", "fanart", "thumbnail"], "artistid": %s}, "id": 1}' % str(db_artist['artistid']))
+                json_response = unicode(json_response, 'utf-8', errors='ignore')
+                json_response = simplejson.loads(json_response)
                 item = json_response["result"]["artistdetails"]
                 newartist = {"Title": item['label'],
                              "Genre": " / ".join(item['genre']),
@@ -108,15 +116,16 @@ def create_light_movielist():
         # return read_from_file(filename)
     if True:
         a = datetime.datetime.now()
-        json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"properties": ["set", "originaltitle", "imdbnumber", "file"], "sort": { "method": "random" } }, "id": 1}')
-        json_query = unicode(json_query, 'utf-8', errors='ignore')
-        json_query = simplejson.loads(json_query)
+        json_response = xbmc.executeJSONRPC(
+            '{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"properties": ["set", "originaltitle", "imdbnumber", "file"], "sort": { "method": "random" } }, "id": 1}')
+        json_response = unicode(json_response, 'utf-8', errors='ignore')
+        json_response = simplejson.loads(json_response)
         b = datetime.datetime.now() - a
         log('Processing Time for fetching JSON light movielist: %s' % b)
         a = datetime.datetime.now()
         b = datetime.datetime.now() - a
         log('Processing Time for save light movielist: %s' % b)
-        return json_query
+        return json_response
 
 
 def Get_JSON_response(query):
@@ -180,13 +189,12 @@ def media_streamdetails(filename, streamdetails):
     return info
 
 
-def GetXBMCAlbums():
-    albums = []        
-    json_query = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbums", "params": {"properties": ["title"]}, "id": 1}')
-    json_query = unicode(json_query, 'utf-8', errors='ignore')
-    json_query = simplejson.loads(json_query)
-    if "result" in json_query and "albums" in json_query['result']:
-        return json_query['result']['albums']
+def create_album_list():
+    json_response = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbums", "params": {"properties": ["title","fanart","thumbnail","artist","year"]}, "id": 1}')
+    json_response = unicode(json_response, 'utf-8', errors='ignore')
+    json_response = simplejson.loads(json_response)
+    if "result" in json_response and "albums" in json_response['result']:
+        return json_response['result']['albums']
     else:
         return []
 
@@ -194,14 +202,14 @@ def GetXBMCAlbums():
 def media_path(path):
     # Check for stacked movies
     try:
-        path = os.path.split(path)[0].rsplit(' , ', 1)[1].replace(",,",",")
+        path = os.path.split(path)[0].rsplit(' , ', 1)[1].replace(",,", ",")
     except:
         path = os.path.split(path)[0]
     # Fixes problems with rared movies and multipath
     if path.startswith("rar://"):
-        path = [os.path.split(urllib.url2pathname(path.replace("rar://","")))[0]]
+        path = [os.path.split(urllib.url2pathname(path.replace("rar://", "")))[0]]
     elif path.startswith("multipath://"):
-        temp_path = path.replace("multipath://","").split('%2f/')
+        temp_path = path.replace("multipath://", "").split('%2f/')
         path = []
         for item in temp_path:
             path.append(urllib.url2pathname(item))
@@ -217,25 +225,26 @@ def log(txt):
     xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGDEBUG)
 
 
-def save_to_file(content, filename, path = "" ):
+def save_to_file(content, filename, path=""):
     import xbmcvfs
     if not xbmcvfs.exists(path):
         xbmcvfs.mkdir(path)
-    text_file_path = os.path.join(path,filename + ".txt")
+    text_file_path = os.path.join(path, filename + ".txt")
     log("save to textfile: " + text_file_path)
-    text_file =  xbmcvfs.File(text_file_path,"w")
-    simplejson.dump(content,text_file)
+    text_file = xbmcvfs.File(text_file_path, "w")
+    simplejson.dump(content, text_file)
     text_file.close()
     return True
 
 
-def read_from_file(path = "" ):
+def read_from_file(path=""):
     import xbmcvfs
     log("trying to load " + path)
     if path == "":
         path = get_browse_dialog(dlg_type=1)
-    if xbmcvfs.exists( path ):
-        with open(path) as f: fc = simplejson.load(f)
+    if xbmcvfs.exists(path):
+        with open(path) as f:
+            fc = simplejson.load(f)
         log("loaded textfile " + path)
         return fc
     else:
@@ -243,10 +252,9 @@ def read_from_file(path = "" ):
 
 
 def GetStringFromUrl(encurl):
-    doc = ""
     succeed = 0
     while succeed < 5:
-        try: 
+        try:
             req = urllib2.Request(encurl)
             req.add_header('User-agent', 'XBMC/13.2 ( ptemming@gmx.net )')
             res = urllib2.urlopen(req)
@@ -261,14 +269,14 @@ def GetStringFromUrl(encurl):
 
 
 def Notify(header, line='', line2='', line3=''):
-    xbmc.executebuiltin('Notification(%s,%s,%s,%s)' % (header, line, line2, line3) )
+    xbmc.executebuiltin('Notification(%s, %s, %s, %s)' % (header, line, line2, line3))
 
 
 def prettyprint(string):
     log(simplejson.dumps(string, sort_keys=True, indent=4, separators=(',', ': ')))
 
 
-def set_artist_properties( audio ):
+def set_artist_properties(audio):
     count = 1
     latestyear = 0
     firstyear = 0
@@ -286,19 +294,19 @@ def set_artist_properties( audio ):
         if firstyear == 0 or item['year'] < firstyear:
             firstyear = item['year']
         count += 1
-    if firstyear > 0 and latestyear < 2020:    
+    if firstyear > 0 and latestyear < 2020:
         window.setProperty('Artist.Albums.Newest', str(latestyear))
         window.setProperty('Artist.Albums.Oldest', str(firstyear))
     window.setProperty('Artist.Albums.Count', str(audio['result']['limits']['total']))
     window.setProperty('Artist.Albums.Playcount', str(playcount))
 
 
-def set_album_properties(json_query):
+def set_album_properties(json_response):
     count = 1
     duration = 0
     discnumber = 0
     tracklist = ""
-    for item in json_query['result']['songs']:
+    for item in json_response['result']['songs']:
         window.setProperty('Album.Song.%d.Title' % count, item['title'])
         tracklist += "[B]" + str(item['track']) + "[/B]: " + item['title'] + "[CR]"
         array = item['file'].split('.')
@@ -312,10 +320,10 @@ def set_album_properties(json_query):
     window.setProperty('Album.Songs.Discs', str(discnumber))
     window.setProperty('Album.Songs.Duration', str(minutes).zfill(2) + ":" + str(seconds).zfill(2))
     window.setProperty('Album.Songs.Tracklist', tracklist)
-    window.setProperty('Album.Songs.Count', str(json_query['result']['limits']['total']))
+    window.setProperty('Album.Songs.Count', str(json_response['result']['limits']['total']))
 
 
-def set_movie_properties(json_query):
+def set_movie_properties(json_response):
     count = 1
     runtime = 0
     writer = []
@@ -326,8 +334,8 @@ def set_movie_properties(json_query):
     years = []
     plot = ""
     title_list = ""
-    title_list += "[B]" + str(json_query['result']['setdetails']['limits']['total']) + " " + xbmc.getLocalizedString(20342) + "[/B][CR][I]"
-    for item in json_query['result']['setdetails']['movies']:
+    title_list += "[B]" + str(json_response['result']['setdetails']['limits']['total']) + " " + xbmc.getLocalizedString(20342) + "[/B][CR][I]"
+    for item in json_response['result']['setdetails']['movies']:
         art = item['art']
         window.setProperty('Set.Movie.%d.DBID' % count, str(item.get('movieid')))
         window.setProperty('Set.Movie.%d.Title' % count, item['label'])
@@ -335,93 +343,108 @@ def set_movie_properties(json_query):
         window.setProperty('Set.Movie.%d.PlotOutline' % count, item['plotoutline'])
         window.setProperty('Set.Movie.%d.Path' % count, media_path(item['file']))
         window.setProperty('Set.Movie.%d.Year' % count, str(item['year']))
-        window.setProperty('Set.Movie.%d.Duration' % count, str(item['runtime']/60))
-        window.setProperty('Set.Movie.%d.Art(clearlogo)' % count, art.get('clearlogo',''))
-        window.setProperty('Set.Movie.%d.Art(discart)' % count, art.get('discart',''))
-        window.setProperty('Set.Movie.%d.Art(fanart)' % count, art.get('fanart',''))
-        window.setProperty('Set.Movie.%d.Art(poster)' % count, art.get('poster',''))
-        window.setProperty('Detail.Movie.%d.Art(fanart)' % count, art.get('fanart','')) #hacked in
-        window.setProperty('Detail.Movie.%d.Art(poster)' % count, art.get('poster',''))
-        title_list += item['label'] + " (" + str(item['year']) + ")[CR]"            
+        window.setProperty('Set.Movie.%d.Duration' % count, str(item['runtime'] / 60))
+        window.setProperty('Set.Movie.%d.Art(clearlogo)' % count, art.get('clearlogo', ''))
+        window.setProperty('Set.Movie.%d.Art(discart)' % count, art.get('discart', ''))
+        window.setProperty('Set.Movie.%d.Art(fanart)' % count, art.get('fanart', ''))
+        window.setProperty('Set.Movie.%d.Art(poster)' % count, art.get('poster', ''))
+        window.setProperty('Detail.Movie.%d.Art(fanart)' % count, art.get('fanart', ''))  # hacked in
+        window.setProperty('Detail.Movie.%d.Art(poster)' % count, art.get('poster', ''))
+        title_list += item['label'] + " (" + str(item['year']) + ")[CR]"
         if item['plotoutline']:
             plot += "[B]" + item['label'] + " (" + str(item['year']) + ")[/B][CR]" + item['plotoutline'] + "[CR][CR]"
         else:
             plot += "[B]" + item['label'] + " (" + str(item['year']) + ")[/B][CR]" + item['plot'] + "[CR][CR]"
         runtime += item['runtime']
         count += 1
-        if item.get( "writer" ):   writer += [ w for w in item[ "writer" ] if w and w not in writer ]
-        if item.get( "director" ): director += [ d for d in item[ "director" ] if d and d not in director ]
-        if item.get( "genre" ): genre += [ g for g in item[ "genre" ] if g and g not in genre ]
-        if item.get( "country" ): country += [ c for c in item[ "country" ] if c and c not in country ]
-        if item.get( "studio" ): studio += [ s for s in item[ "studio" ] if s and s not in studio ]
+        if item.get("writer"):
+            writer += [w for w in item["writer"] if w and w not in writer]
+        if item.get("director"):
+            director += [d for d in item["director"] if d and d not in director]
+        if item.get("genre"):
+            genre += [g for g in item["genre"] if g and g not in genre]
+        if item.get("country"):
+            country += [c for c in item["country"] if c and c not in country]
+        if item.get("studio"):
+            studio += [s for s in item["studio"] if s and s not in studio]
         years.append(str(item['year']))
     window.setProperty('Set.Movies.Plot', plot)
-    if json_query['result']['setdetails']['limits']['total'] > 1:
+    if json_response['result']['setdetails']['limits']['total'] > 1:
         window.setProperty('Set.Movies.ExtendedPlot', title_list + "[/I][CR]" + plot)
     else:
-        window.setProperty('Set.Movies.ExtendedPlot', plot)        
-    window.setProperty('Set.Movies.Runtime', str(runtime/60))
-    window.setProperty('Set.Movies.Writer', " / ".join( writer ))
-    window.setProperty('Set.Movies.Director', " / ".join( director ))
-    window.setProperty('Set.Movies.Genre', " / ".join( genre ))
-    window.setProperty('Set.Movies.Country', " / ".join( country ))
-    window.setProperty('Set.Movies.Studio', " / ".join( studio ))
-    window.setProperty('Set.Movies.Years', " / ".join( years ))
-    window.setProperty('Set.Movies.Count', str(json_query['result']['setdetails']['limits']['total']))
-    
+        window.setProperty('Set.Movies.ExtendedPlot', plot)
+    window.setProperty('Set.Movies.Runtime', str(runtime / 60))
+    window.setProperty('Set.Movies.Writer', " / ".join(writer))
+    window.setProperty('Set.Movies.Director', " / ".join(director))
+    window.setProperty('Set.Movies.Genre', " / ".join(genre))
+    window.setProperty('Set.Movies.Country', " / ".join(country))
+    window.setProperty('Set.Movies.Studio', " / ".join(studio))
+    window.setProperty('Set.Movies.Years', " / ".join(years))
+    window.setProperty('Set.Movies.Count', str(json_response['result']['setdetails']['limits']['total']))
+
+
 def clear_properties():
-    for i in range(1,40):
-        window.clearProperty('Artist.Album.%d.Title' % i)
-        window.clearProperty('Artist.Album.%d.Plot' % i)
-        window.clearProperty('Artist.Album.%d.PlotOutline' % i)
-        window.clearProperty('Artist.Album.%d.Year' % i)
-        window.clearProperty('Artist.Album.%d.Duration' % i)
-        window.clearProperty('Artist.Album.%d.Thumb' % i)
-        window.clearProperty('Artist.Album.%d.ID' % i)
-        window.clearProperty('Album.Song.%d.Title' % i)
-        window.clearProperty('Album.Song.%d.FileExtension' % i)   
-        window.clearProperty('Set.Movie.%d.Art(clearlogo)' % i)
-        window.clearProperty('Set.Movie.%d.Art(fanart)' % i)
-        window.clearProperty('Set.Movie.%d.Art(poster)' % i)
-        window.clearProperty('Set.Movie.%d.Art(discart)' % i)
-        window.clearProperty('Detail.Movie.%d.Art(poster)' % i)
-        window.clearProperty('Detail.Movie.%d.Art(fanart)' % i)
-        window.clearProperty('Detail.Movie.%d.Art(Path)' % i)
-        wnd.clearProperty('AudioLanguage.%d' % i)
-        wnd.clearProperty('AudioCodec.%d' % i)
-        wnd.clearProperty('AudioChannels.%d' % i)
-        wnd.clearProperty('SubtitleLanguage.%d' % i)
-        
-    window.clearProperty('Album.Songs.TrackList')   
-    window.clearProperty('Album.Songs.Discs')   
-    window.clearProperty('Artist.Albums.Newest')   
-    window.clearProperty('Artist.Albums.Oldest')   
-    window.clearProperty('Artist.Albums.Count')   
-    window.clearProperty('Artist.Albums.Playcount')   
-    window.clearProperty('Album.Songs.Discs')   
-    window.clearProperty('Album.Songs.Duration')   
-    window.clearProperty('Album.Songs.Count')   
-    window.clearProperty('Set.Movies.Plot')   
-    window.clearProperty('Set.Movies.ExtendedPlot')   
-    window.clearProperty('Set.Movies.Runtime')   
-    window.clearProperty('Set.Movies.Writer')   
-    window.clearProperty('Set.Movies.Director')   
-    window.clearProperty('Set.Movies.Genre')   
-    window.clearProperty('Set.Movies.Years')   
-    window.clearProperty('Set.Movies.Count')   
-                   
-def passDataToSkin(name, data, prefix="",debug = False):
-    if data != None:
+    if xbmc.getCondVisibility("Window.IsActive(videolibrary)"):
+        for i in range(1, 40):
+            window.clearProperty('Set.Movie.%d.Art(clearlogo)' % i)
+            window.clearProperty('Set.Movie.%d.Art(fanart)' % i)
+            window.clearProperty('Set.Movie.%d.Art(poster)' % i)
+            window.clearProperty('Set.Movie.%d.Art(discart)' % i)
+            window.clearProperty('Detail.Movie.%d.Art(poster)' % i)
+            window.clearProperty('Detail.Movie.%d.Art(fanart)' % i)
+            window.clearProperty('Detail.Movie.%d.Path' % i)
+            wnd.clearProperty('AudioLanguage.%d' % i)
+            wnd.clearProperty('AudioCodec.%d' % i)
+            wnd.clearProperty('AudioChannels.%d' % i)
+            wnd.clearProperty('SubtitleLanguage.%d' % i)
+        window.clearProperty('Set.Movies.Plot')
+        window.clearProperty('Set.Movies.ExtendedPlot')
+        window.clearProperty('Set.Movies.Runtime')
+        window.clearProperty('Set.Movies.Writer')
+        window.clearProperty('Set.Movies.Director')
+        window.clearProperty('Set.Movies.Genre')
+        window.clearProperty('Set.Movies.Years')
+        window.clearProperty('Set.Movies.Count')
+    else:
+        for i in range(1, 40):
+            window.clearProperty('Artist.Album.%d.Title' % i)
+            window.clearProperty('Artist.Album.%d.Plot' % i)
+            window.clearProperty('Artist.Album.%d.PlotOutline' % i)
+            window.clearProperty('Artist.Album.%d.Year' % i)
+            window.clearProperty('Artist.Album.%d.Duration' % i)
+            window.clearProperty('Artist.Album.%d.Thumb' % i)
+            window.clearProperty('Artist.Album.%d.ID' % i)
+            window.clearProperty('Album.Song.%d.Title' % i)
+            window.clearProperty('Album.Song.%d.FileExtension' % i)
+            window.clearProperty('Detail.Music.%d.Art(fanart)' % i)
+            window.clearProperty('Detail.Music.%d.Art(thumb)' % i)
+            window.clearProperty('Detail.Music.%d.DBID' % i)
+            window.clearProperty('Detail.Music.%d.Genre' % i)
+            window.clearProperty('Detail.Music.%d.Title' % i)
+            window.clearProperty('Detail.Music.%d.Year' % i)
+            window.clearProperty('Detail.Music.%d.Artist' % i)
+        window.clearProperty('Album.Songs.TrackList')
+        window.clearProperty('Album.Songs.Discs')
+        window.clearProperty('Artist.Albums.Newest')
+        window.clearProperty('Artist.Albums.Oldest')
+        window.clearProperty('Artist.Albums.Count')
+        window.clearProperty('Artist.Albums.Playcount')
+        window.clearProperty('Album.Songs.Discs')
+        window.clearProperty('Album.Songs.Duration')
+        window.clearProperty('Album.Songs.Count')
+
+
+def passDataToSkin(name, data, prefix="", debug=False):
+    if data is not None:
        # log( "%s%s.Count = %s" % (prefix, name, str(len(data)) ) )
         for (count, result) in enumerate(data):
             if debug:
-                log( "%s%s.%i = %s" % (prefix, name, count + 1, str(result) ) )
-            for (key,value) in result.iteritems():
+                log("%s%s.%i = %s" % (prefix, name, count + 1, str(result)))
+            for (key, value) in result.iteritems():
                 window.setProperty('%s%s.%i.%s' % (prefix, name, count + 1, str(key)), unicode(value))
                 if debug:
                     log('%s%s.%i.%s --> ' % (prefix, name, count + 1, str(key)) + unicode(value))
         window.setProperty('%s%s.Count' % (prefix, name), str(len(data)))
     else:
         window.setProperty('%s%s.Count' % (prefix, name), '0')
-        log( "%s%s.Count = None" % (prefix, name ) )
-    
+        log("%s%s.Count = None" % (prefix, name))

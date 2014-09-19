@@ -27,6 +27,8 @@ class Daemon:
         self.wnd = xbmcgui.Window(12003)  # Video info dialog
         self.musicvideos = []
         self.movies = []
+        self.albums = []
+        self.artists = []
         self.id = None
         self.dbid = None
         self.type = False
@@ -42,6 +44,8 @@ class Daemon:
         log("starting backend")
         self.musicvideos = create_musicvideo_list()
         self.movies = create_movie_list()
+        self.albums = create_album_list()
+        self.artists = create_artist_list()
         while (not self._stop) and (not xbmc.abortRequested):
             if xbmc.getCondVisibility("Container.Content(movies) | Container.Content(sets) | Container.Content(artists) | Container.Content(albums) | Container.Content(episodes) | Container.Content(musicvideos)"):
                 self.selecteditem = xbmc.getInfoLabel("ListItem.DBID")
@@ -69,19 +73,25 @@ class Daemon:
                 self.window.setProperty("SeasonID", xbmc.getInfoLabel("ListItem.DBID"))
                 self.window.setProperty("SeasonNumber", xbmc.getInfoLabel("ListItem.Season"))
             elif xbmc.getCondVisibility("Container.Content(years)"):
-                self._detail_selector("year")
+                if xbmc.getCondVisibility("Window.IsActive(videolibrary)"):
+                    self.setMovieDetailsforCategory("year")
+                else:
+                    self.setAlbumDetailsforCategory("year")
             elif xbmc.getCondVisibility("Container.Content(genres)"):
-                self._detail_selector("genre")
+                if xbmc.getCondVisibility("Window.IsActive(videolibrary)"):
+                    self.setMovieDetailsforCategory("genre")
+                else:
+                    self.setArtistDetailsforCategory("genre")
             elif xbmc.getCondVisibility("Container.Content(directors)"):
-                self._detail_selector("director")
+                self.setMovieDetailsforCategory("director")
             elif xbmc.getCondVisibility("Container.Content(actors)"):
-                self._detail_selector("cast")
+                self.setMovieDetailsforCategory("cast")
             elif xbmc.getCondVisibility("Container.Content(studios)"):
-                self._detail_selector("studio")
+                self.setMovieDetailsforCategory("studio")
             elif xbmc.getCondVisibility("Container.Content(countries)"):
-                self._detail_selector("country")
+                self.setMovieDetailsforCategory("country")
             elif xbmc.getCondVisibility("Container.Content(tags)"):
-                self._detail_selector("tag")
+                self.setMovieDetailsforCategory("tag")
             elif xbmc.getCondVisibility('Container.Content(songs)') and self.musicvideos:
                 # get artistname and songtitle of the selected item
                 self.selecteditem = xbmc.getInfoLabel('ListItem.DBID')
@@ -107,7 +117,7 @@ class Daemon:
                     log("Daemon updating SimilarArtists")
                     Artist_mbid = GetMusicBrainzIdFromNet(self.selecteditem)
                     passDataToSkin('SimilarArtistsInLibrary', None, self.prop_prefix)
-                    passDataToSkin('SimilarArtists', GetSimilarArtistsInLibrary(Artist_mbid), self.prop_prefix)
+                    passDataToSkin('SimilarArtists', GetSimilarArtistsInLibrary(Artist_mbid,self.artists), self.prop_prefix)
                     xbmc.sleep(2000)
             elif xbmc.getCondVisibility('Window.IsActive(screensaver)'):
                 xbmc.sleep(1000)
@@ -169,7 +179,7 @@ class Daemon:
         if ("result" in json_response) and ('setdetails' in json_response['result']):
             set_movie_properties(json_response)
 
-    def _detail_selector(self, comparator):
+    def setMovieDetailsforCategory(self, comparator):
         self.selecteditem = xbmc.getInfoLabel("ListItem.Label")
         if (self.selecteditem != self.previousitem):
             if xbmc.getCondVisibility("!Stringcompare(ListItem.Label,..)"):
@@ -181,6 +191,46 @@ class Daemon:
                         self.window.setProperty('Detail.Movie.%i.Path' % (count), movie["file"])
                         self.window.setProperty('Detail.Movie.%i.Art(fanart)' % (count), movie["art"].get('fanart', ''))
                         self.window.setProperty('Detail.Movie.%i.Art(poster)' % (count), movie["art"].get('poster', ''))
+                        count += 1
+                    if count > 19:
+                        break
+            else:
+                clear_properties()
+
+    def setAlbumDetailsforCategory(self, comparator):
+        self.selecteditem = xbmc.getInfoLabel("ListItem.Label")
+        if (self.selecteditem != self.previousitem):
+            if xbmc.getCondVisibility("!Stringcompare(ListItem.Label,..)"):
+                self.previousitem = self.selecteditem
+                clear_properties()
+                count = 1
+                for album in self.albums:
+                    if self.selecteditem in str(album[comparator]):
+                        self.window.setProperty('Detail.Music.%i.DBID' % (count), str(album["albumid"]))
+                        self.window.setProperty('Detail.Music.%i.Year' % (count), str(album["year"]))
+                        self.window.setProperty('Detail.Music.%i.Art(fanart)' % (count), album["fanart"])
+                        self.window.setProperty('Detail.Music.%i.Art(thumb)' % (count), album["thumbnail"])
+                        self.window.setProperty('Detail.Music.%i.Title' % (count), album["title"])
+                        self.window.setProperty('Detail.Music.%i.Artist' % (count), " / ".join(album["artist"]))
+                        count += 1
+                    if count > 19:
+                        break
+            else:
+                clear_properties()
+
+    def setArtistDetailsforCategory(self, comparator):
+        self.selecteditem = xbmc.getInfoLabel("ListItem.Label")
+        if (self.selecteditem != self.previousitem):
+            if xbmc.getCondVisibility("!Stringcompare(ListItem.Label,..)"):
+                self.previousitem = self.selecteditem
+                clear_properties()
+                count = 1
+                for artist in self.artists:
+                    if self.selecteditem in str(artist[comparator]):
+                        self.window.setProperty('Detail.Music.%i.DBID' % (count), str(artist["artistid"]))
+                        self.window.setProperty('Detail.Music.%i.Art(fanart)' % (count), artist["fanart"])
+                        self.window.setProperty('Detail.Music.%i.Art(thumb)' % (count), artist["thumbnail"])
+                        self.window.setProperty('Detail.Music.%i.Genre' % (count), " / ".join(artist["genre"]))
                         count += 1
                     if count > 19:
                         break
