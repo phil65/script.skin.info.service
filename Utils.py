@@ -65,7 +65,6 @@ def create_artist_list():
     json_response = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioLibrary.GetArtists", "params": {"properties": ["musicbrainzartistid","fanart","thumbnail","genre"]}, "id": 1}')
     json_response = unicode(json_response, 'utf-8', errors='ignore')
     json_response = simplejson.loads(json_response)
-    prettyprint(json_response)
     if "result" in json_response and "artists" in json_response['result']:
         return json_response['result']['artists']
     else:
