@@ -49,18 +49,6 @@ def create_movie_list():
         return False
 
 
-def create_channel_list():
-    json_response = xbmc.executeJSONRPC(
-        '{"jsonrpc": "2.0", "method": "PVR.GetChannels", "params": {"properties": ["thumbnail","channeltype", "hidden", "locked", "channel", "lastplayed"], "channelgroupid": "alltv" }, "id": 1}')
-    json_response = unicode(json_response, 'utf-8', errors='ignore')
-    json_response = simplejson.loads(json_response)
-#    prettyprint(json_response)
-    if json_response['result'] is not None and "movies" in json_response["result"]:
-        return json_response
-    else:
-        return False
-
-
 def create_artist_list():
     json_response = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioLibrary.GetArtists", "params": {"properties": ["musicbrainzartistid","fanart","thumbnail","genre"]}, "id": 1}')
     json_response = unicode(json_response, 'utf-8', errors='ignore')
