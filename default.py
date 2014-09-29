@@ -146,7 +146,6 @@ class Main:
             if ("result" in json_response) and ("files" in json_response["result"]):
                 for artist in json_response["result"]["files"]:
                     if "id" in artist:
-                        prettyprint(artist)
                         self.window.setProperty('Detail.Music.%i.DBID' % (count), str(artist["id"]))
                         self.window.setProperty('Detail.Music.%i.Art(fanart)' % (count), artist["fanart"])
                         self.window.setProperty('Detail.Music.%i.Art(thumb)' % (count), artist["thumbnail"])
