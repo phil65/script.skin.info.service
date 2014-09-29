@@ -66,11 +66,9 @@ class Main:
             self.window.setProperty("SeasonID", xbmc.getInfoLabel("ListItem.DBID"))
             self.window.setProperty("SeasonNumber", xbmc.getInfoLabel("ListItem.Season"))
         elif xbmc.getCondVisibility("Window.IsActive(videolibrary) + [Container.Content(directors) | Container.Content(actors) | Container.Content(genres) | Container.Content(years) | Container.Content(studios) | Container.Content(countries) | Container.Content(tags)]"):
-            self.setMovieDetailsforCategory("director")
-        elif xbmc.getCondVisibility("Container.Content(years)"):
-            self.setAlbumDetailsforCategory("year")
-        elif xbmc.getCondVisibility("Container.Content(genres)"):
-            self.setArtistDetailsforCategory("genre")
+            self.setMovieDetailsforCategory()
+        elif xbmc.getCondVisibility("Container.Content(years) | Container.Content(genres)"):
+            self.setMusicDetailsforCategory()
         else:
             clear_properties()
 
@@ -123,7 +121,7 @@ class Main:
         if ("result" in json_response) and ('setdetails' in json_response['result']):
             set_movie_properties(json_response)
 
-    def setMovieDetailsforCategory(self, comparator):
+    def setMovieDetailsforCategory(self):
         clear_properties()
         if self.label != "..":
             count = 1
@@ -138,26 +136,8 @@ class Main:
                     if count > 19:
                         break
 
-    def setAlbumDetailsforCategory(self, comparator):
-        clear_properties()
-        if self.label != "..":
-            count = 1
-            path = xbmc.getInfoLabel("ListItem.FolderPath")
-            json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "music", "properties": ["year", "fanart", "artist", "thumbnail"]}, "id": 1}' % (path))
-            if ("result" in json_response) and ("files" in json_response["result"]):
-                for album in json_response["result"]["files"]:
-                    if "id" in album:
-                        self.window.setProperty('Detail.Music.%i.DBID' % (count), str(album["id"]))
-                        self.window.setProperty('Detail.Music.%i.Year' % (count), str(album["year"]))
-                        self.window.setProperty('Detail.Music.%i.Art(fanart)' % (count), album["fanart"])
-                        self.window.setProperty('Detail.Music.%i.Art(thumb)' % (count), album["thumbnail"])
-                        self.window.setProperty('Detail.Music.%i.Title' % (count), album["label"])
-                        self.window.setProperty('Detail.Music.%i.Artist' % (count), " / ".join(album["artist"]))
-                        count += 1
-                        if count > 19:
-                            break
 
-    def setArtistDetailsforCategory(self, comparator):
+    def setMusicDetailsforCategory(self):
         clear_properties()
         if self.label != "..":
             count = 1
@@ -166,6 +146,7 @@ class Main:
             if ("result" in json_response) and ("files" in json_response["result"]):
                 for artist in json_response["result"]["files"]:
                     if "id" in artist:
+                        prettyprint(artist)
                         self.window.setProperty('Detail.Music.%i.DBID' % (count), str(artist["id"]))
                         self.window.setProperty('Detail.Music.%i.Art(fanart)' % (count), artist["fanart"])
                         self.window.setProperty('Detail.Music.%i.Art(thumb)' % (count), artist["thumbnail"])
