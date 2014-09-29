@@ -26,7 +26,6 @@ class Daemon:
         self.window = xbmcgui.Window(10000)  # Home Window
         self.wnd = xbmcgui.Window(12003)  # Video info dialog
         self.id = None
-        self.dbid = None
         self.type = False
         self.Artist_mbid = None
         self.window.clearProperty('SongToMusicVideo.Path')
@@ -127,7 +126,7 @@ class Daemon:
 
     def setMovieDetailsforCategory(self):
         clear_properties()
-        if self.label != "..":
+        if xbmc.getInfoLabel("ListItem.Label") != "..":
             count = 1
             path = xbmc.getInfoLabel("ListItem.FolderPath")
             json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["art"]}, "id": 1}' % (path))
@@ -142,7 +141,7 @@ class Daemon:
 
     def setMusicDetailsforCategory(self):
         clear_properties()
-        if self.label != "..":
+        if xbmc.getInfoLabel("ListItem.Label") != "..":
             count = 1
             path = xbmc.getInfoLabel("ListItem.FolderPath")
             json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "music", "properties": ["fanart", "thumbnail"]}, "id": 1}' % (path))
