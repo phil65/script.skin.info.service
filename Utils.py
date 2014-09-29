@@ -21,44 +21,6 @@ wnd = xbmcgui.Window(12003)
 locallist = []
 
 
-def create_musicvideo_list():
-    musicvideos = []
-    json_response = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMusicVideos", "params": {"properties": ["artist", "file"], "sort": { "method": "artist" } }, "id": 1}')
-    json_response = unicode(json_response, 'utf-8', errors='ignore')
-    json_response = simplejson.loads(json_response)
-    if "result" in json_response and ("musicvideos" in json_response['result']):
-        # iterate through the results
-        for item in json_response['result']['musicvideos']:
-            artist = item['artist']
-            title = item['label']
-            path = item['file']
-            musicvideos.append((artist, title, path))
-        return musicvideos
-    else:
-        return False
-
-
-def create_movie_list():
-    json_response = xbmc.executeJSONRPC(
-        '{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"properties": ["year", "file", "art", "genre", "director","cast","studio","country","tag"], "sort": { "method": "random" } }, "id": 1}')
-    json_response = unicode(json_response, 'utf-8', errors='ignore')
-    json_response = simplejson.loads(json_response)
-    if json_response['result'] is not None and "movies" in json_response["result"]:
-        return json_response
-    else:
-        return False
-
-
-def create_artist_list():
-    json_response = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioLibrary.GetArtists", "params": {"properties": ["musicbrainzartistid","fanart","thumbnail","genre"]}, "id": 1}')
-    json_response = unicode(json_response, 'utf-8', errors='ignore')
-    json_response = simplejson.loads(json_response)
-    if "result" in json_response and "artists" in json_response['result']:
-        return json_response['result']['artists']
-    else:
-        return []
-
-
 def GetSimilarArtistsInLibrary(id, db_artists):
     from OnlineMusicInfo import GetSimilarById
     simi_artists = GetSimilarById(id)
@@ -96,23 +58,6 @@ def GetSimilarArtistsInLibrary(id, db_artists):
                 artists.append(newartist)
     log('%i of %i artists found in last.FM is in XBMC database' % (len(artists), len(simi_artists)))
     return artists
-
-
-def create_light_movielist():
-    # if xbmcvfs.exists(filename) and time.time() - os.path.getmtime(filename) < 1:
-        # return read_from_file(filename)
-    if True:
-        a = datetime.datetime.now()
-        json_response = xbmc.executeJSONRPC(
-            '{"jsonrpc": "2.0", "method": "VideoLibrary.GetMovies", "params": {"properties": ["set", "originaltitle", "imdbnumber", "file"], "sort": { "method": "random" } }, "id": 1}')
-        json_response = unicode(json_response, 'utf-8', errors='ignore')
-        json_response = simplejson.loads(json_response)
-        b = datetime.datetime.now() - a
-        log('Processing Time for fetching JSON light movielist: %s' % b)
-        a = datetime.datetime.now()
-        b = datetime.datetime.now() - a
-        log('Processing Time for save light movielist: %s' % b)
-        return json_response
 
 
 def Get_JSON_response(query):
@@ -176,16 +121,6 @@ def media_streamdetails(filename, streamdetails):
     return info
 
 
-def create_album_list():
-    json_response = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbums", "params": {"properties": ["title","fanart","thumbnail","artist","year"]}, "id": 1}')
-    json_response = unicode(json_response, 'utf-8', errors='ignore')
-    json_response = simplejson.loads(json_response)
-    if "result" in json_response and "albums" in json_response['result']:
-        return json_response['result']['albums']
-    else:
-        return []
-
-
 def media_path(path):
     # Check for stacked movies
     try:
@@ -210,32 +145,6 @@ def log(txt):
         txt = txt.decode("utf-8")
     message = u'%s: %s' % (__addonid__, txt)
     xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGDEBUG)
-
-
-def save_to_file(content, filename, path=""):
-    import xbmcvfs
-    if not xbmcvfs.exists(path):
-        xbmcvfs.mkdir(path)
-    text_file_path = os.path.join(path, filename + ".txt")
-    log("save to textfile: " + text_file_path)
-    text_file = xbmcvfs.File(text_file_path, "w")
-    simplejson.dump(content, text_file)
-    text_file.close()
-    return True
-
-
-def read_from_file(path=""):
-    import xbmcvfs
-    log("trying to load " + path)
-    if path == "":
-        path = get_browse_dialog(dlg_type=1)
-    if xbmcvfs.exists(path):
-        with open(path) as f:
-            fc = simplejson.load(f)
-        log("loaded textfile " + path)
-        return fc
-    else:
-        return False
 
 
 def GetStringFromUrl(encurl):
