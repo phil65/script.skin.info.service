@@ -61,26 +61,10 @@ class Daemon:
                 self.window.setProperty("SeasonPoster", xbmc.getInfoLabel("ListItem.Icon"))
                 self.window.setProperty("SeasonID", xbmc.getInfoLabel("ListItem.DBID"))
                 self.window.setProperty("SeasonNumber", xbmc.getInfoLabel("ListItem.Season"))
-            elif xbmc.getCondVisibility("Container.Content(years)"):
-                if xbmc.getCondVisibility("Window.IsActive(videolibrary)"):
-                    self.setMovieDetailsforCategory("year")
-                else:
-                    self.setAlbumDetailsforCategory("year")
-            elif xbmc.getCondVisibility("Container.Content(genres)"):
-                if xbmc.getCondVisibility("Window.IsActive(videolibrary)"):
-                    self.setMovieDetailsforCategory("genre")
-                else:
-                    self.setArtistDetailsforCategory("genre")
-            elif xbmc.getCondVisibility("Container.Content(directors)"):
-                self.setMovieDetailsforCategory("director")
-            elif xbmc.getCondVisibility("Container.Content(actors)"):
-                self.setMovieDetailsforCategory("cast")
-            elif xbmc.getCondVisibility("Container.Content(studios)"):
-                self.setMovieDetailsforCategory("studio")
-            elif xbmc.getCondVisibility("Container.Content(countries)"):
-                self.setMovieDetailsforCategory("country")
-            elif xbmc.getCondVisibility("Container.Content(tags)"):
-                self.setMovieDetailsforCategory("tag")
+            elif xbmc.getCondVisibility("Window.IsActive(videolibrary) + [Container.Content(directors) | Container.Content(actors) | Container.Content(genres) | Container.Content(years) | Container.Content(studios) | Container.Content(countries) | Container.Content(tags)]"):
+                self.setMovieDetailsforCategory()
+            elif xbmc.getCondVisibility("Container.Content(years) | Container.Content(genres)"):
+                self.setMusicDetailsforCategory()
             elif xbmc.getCondVisibility('Window.IsActive(screensaver)'):
                 xbmc.sleep(1000)
             else:
