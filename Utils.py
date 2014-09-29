@@ -321,7 +321,7 @@ def set_movie_properties(json_response):
     years = []
     plot = ""
     title_list = ""
-    title_list += "[B]" + str(json_response['result']['setdetails']['limits']['total']) + " " + xbmc.getLocalizedString(20342) + "[/B][CR][I]"
+    title_header = "[B]" + str(json_response['result']['setdetails']['limits']['total']) + " " + xbmc.getLocalizedString(20342) + "[/B][CR]"
     for item in json_response['result']['setdetails']['movies']:
         art = item['art']
         window.setProperty('Set.Movie.%d.DBID' % count, str(item.get('movieid')))
@@ -337,7 +337,7 @@ def set_movie_properties(json_response):
         window.setProperty('Set.Movie.%d.Art(poster)' % count, art.get('poster', ''))
         window.setProperty('Detail.Movie.%d.Art(fanart)' % count, art.get('fanart', ''))  # hacked in
         window.setProperty('Detail.Movie.%d.Art(poster)' % count, art.get('poster', ''))
-        title_list += item['label'] + " (" + str(item['year']) + ")[CR]"
+        title_list += "[I]" + item['label'] + " (" + str(item['year']) + ")[/I][CR]"
         if item['plotoutline']:
             plot += "[B]" + item['label'] + " (" + str(item['year']) + ")[/B][CR]" + item['plotoutline'] + "[CR][CR]"
         else:
@@ -357,9 +357,10 @@ def set_movie_properties(json_response):
         years.append(str(item['year']))
     window.setProperty('Set.Movies.Plot', plot)
     if json_response['result']['setdetails']['limits']['total'] > 1:
-        window.setProperty('Set.Movies.ExtendedPlot', title_list + "[/I][CR]" + plot)
+        window.setProperty('Set.Movies.ExtendedPlot', title_header + title_list + "[CR]" + plot)
     else:
         window.setProperty('Set.Movies.ExtendedPlot', plot)
+    window.setProperty('Set.Movies.Title', title_list)
     window.setProperty('Set.Movies.Runtime', str(runtime / 60))
     window.setProperty('Set.Movies.Writer', " / ".join(writer))
     window.setProperty('Set.Movies.Director', " / ".join(director))

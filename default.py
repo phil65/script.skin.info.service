@@ -25,16 +25,9 @@ class Daemon:
     def _init_vars(self):
         self.window = xbmcgui.Window(10000)  # Home Window
         self.wnd = xbmcgui.Window(12003)  # Video info dialog
-        self.musicvideos = []
-        self.movies = []
-        self.albums = []
-        self.artists = []
         self.id = None
         self.dbid = None
         self.type = False
-        self.tag = ""
-        self.silent = True
-        self.prop_prefix = ""
         self.Artist_mbid = None
         self.window.clearProperty('SongToMusicVideo.Path')
 
@@ -42,10 +35,6 @@ class Daemon:
         self._stop = False
         self.previousitem = ""
         log("starting backend")
-        self.musicvideos = create_musicvideo_list()
-        self.movies = create_movie_list()
-        self.albums = create_album_list()
-        self.artists = create_artist_list()
         while (not self._stop) and (not xbmc.abortRequested):
             if xbmc.getCondVisibility("Container.Content(movies) | Container.Content(sets) | Container.Content(artists) | Container.Content(albums) | Container.Content(episodes) | Container.Content(musicvideos)"):
                 self.selecteditem = xbmc.getInfoLabel("ListItem.DBID")
@@ -108,17 +97,6 @@ class Daemon:
                             xbmc.sleep(100)
                             # stop iterating
                             break
-         #   elif xbmc.getCondVisibility("Window.IsActive(visualisation)"):
-            elif False:
-                self.selecteditem = xbmc.getInfoLabel('MusicPlayer.Artist')
-                if (self.selecteditem != self.previousitem) and self.selecteditem:
-                    self.previousitem = self.selecteditem
-                    from MusicBrainz import GetMusicBrainzIdFromNet
-                    log("Daemon updating SimilarArtists")
-                    Artist_mbid = GetMusicBrainzIdFromNet(self.selecteditem)
-                    passDataToSkin('SimilarArtistsInLibrary', None, self.prop_prefix)
-                    passDataToSkin('SimilarArtists', GetSimilarArtistsInLibrary(Artist_mbid,self.artists), self.prop_prefix)
-                    xbmc.sleep(2000)
             elif xbmc.getCondVisibility('Window.IsActive(screensaver)'):
                 xbmc.sleep(1000)
             else:
