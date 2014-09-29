@@ -61,9 +61,17 @@ class Daemon:
                 self.window.setProperty("SeasonID", xbmc.getInfoLabel("ListItem.DBID"))
                 self.window.setProperty("SeasonNumber", xbmc.getInfoLabel("ListItem.Season"))
             elif xbmc.getCondVisibility("Window.IsActive(videolibrary) + [Container.Content(directors) | Container.Content(actors) | Container.Content(genres) | Container.Content(years) | Container.Content(studios) | Container.Content(countries) | Container.Content(tags)]"):
-                self.setMovieDetailsforCategory()
+                self.selecteditem = xbmc.getInfoLabel("ListItem.Label")
+                if (self.selecteditem != self.previousitem):
+                    self.previousitem = self.selecteditem
+                    if (self.selecteditem != "") and (self.selecteditem != ".."):
+                        self.setMovieDetailsforCategory()
             elif xbmc.getCondVisibility("Container.Content(years) | Container.Content(genres)"):
-                self.setMusicDetailsforCategory()
+                self.selecteditem = xbmc.getInfoLabel("ListItem.Label")
+                if (self.selecteditem != self.previousitem):
+                    self.previousitem = self.selecteditem
+                    if (self.selecteditem != "") and (self.selecteditem != ".."):
+                        self.setMusicDetailsforCategory()
             elif xbmc.getCondVisibility('Window.IsActive(screensaver)'):
                 xbmc.sleep(1000)
             else:
@@ -125,7 +133,6 @@ class Daemon:
             set_movie_properties(json_response)
 
     def setMovieDetailsforCategory(self):
-        clear_properties()
         if xbmc.getInfoLabel("ListItem.Label") != "..":
             count = 1
             path = xbmc.getInfoLabel("ListItem.FolderPath")
@@ -138,6 +145,10 @@ class Daemon:
                     count += 1
                     if count > 19:
                         break
+            else:
+                clear_properties()
+        else:
+            clear_properties()
 
     def setMusicDetailsforCategory(self):
         clear_properties()
@@ -154,6 +165,10 @@ class Daemon:
                         count += 1
                         if count > 19:
                             break
+            else:
+                clear_properties()
+        else:
+            clear_properties()
 
     def _set_properties(self, results):
         # Set language properties
