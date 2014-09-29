@@ -81,22 +81,6 @@ class Daemon:
                 self.setMovieDetailsforCategory("country")
             elif xbmc.getCondVisibility("Container.Content(tags)"):
                 self.setMovieDetailsforCategory("tag")
-            elif xbmc.getCondVisibility('Container.Content(songs)') and self.musicvideos:
-                # get artistname and songtitle of the selected item
-                self.selecteditem = xbmc.getInfoLabel('ListItem.DBID')
-                # check if we've focussed a new song
-                if self.selecteditem != self.previousitem:
-                    self.previousitem = self.selecteditem
-                    # clear the window property
-                    self.window.clearProperty('SongToMusicVideo.Path')
-                    # iterate through our musicvideos
-                    for musicvideo in self.musicvideos:
-                        if self.selecteditem == musicvideo[0]:  # needs fixing
-                            # match found, set the window property
-                            self.window.setProperty('SongToMusicVideo.Path', musicvideo[2])
-                            xbmc.sleep(100)
-                            # stop iterating
-                            break
             elif xbmc.getCondVisibility('Window.IsActive(screensaver)'):
                 xbmc.sleep(1000)
             else:
@@ -175,45 +159,21 @@ class Daemon:
             else:
                 clear_properties()
 
-    def setAlbumDetailsforCategory(self, comparator):
-        self.selecteditem = xbmc.getInfoLabel("ListItem.Label")
-        if (self.selecteditem != self.previousitem):
-            if xbmc.getCondVisibility("!Stringcompare(ListItem.Label,..)"):
-                self.previousitem = self.selecteditem
-                clear_properties()
-                count = 1
-                for album in self.albums:
-                    if self.selecteditem in str(album[comparator]):
-                        self.window.setProperty('Detail.Music.%i.DBID' % (count), str(album["albumid"]))
-                        self.window.setProperty('Detail.Music.%i.Year' % (count), str(album["year"]))
-                        self.window.setProperty('Detail.Music.%i.Art(fanart)' % (count), album["fanart"])
-                        self.window.setProperty('Detail.Music.%i.Art(thumb)' % (count), album["thumbnail"])
-                        self.window.setProperty('Detail.Music.%i.Title' % (count), album["title"])
-                        self.window.setProperty('Detail.Music.%i.Artist' % (count), " / ".join(album["artist"]))
-                        count += 1
-                    if count > 19:
-                        break
-            else:
-                clear_properties()
-
-    def setArtistDetailsforCategory(self, comparator):
-        self.selecteditem = xbmc.getInfoLabel("ListItem.Label")
-        if (self.selecteditem != self.previousitem):
-            if xbmc.getCondVisibility("!Stringcompare(ListItem.Label,..)"):
-                self.previousitem = self.selecteditem
-                clear_properties()
-                count = 1
-                for artist in self.artists:
-                    if self.selecteditem in str(artist[comparator]):
-                        self.window.setProperty('Detail.Music.%i.DBID' % (count), str(artist["artistid"]))
+    def setMusicDetailsforCategory(self):
+        clear_properties()
+        if self.label != "..":
+            count = 1
+            path = xbmc.getInfoLabel("ListItem.FolderPath")
+            json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "music", "properties": ["fanart", "thumbnail"]}, "id": 1}' % (path))
+            if ("result" in json_response) and ("files" in json_response["result"]):
+                for artist in json_response["result"]["files"]:
+                    if "id" in artist:
+                        self.window.setProperty('Detail.Music.%i.DBID' % (count), str(artist["id"]))
                         self.window.setProperty('Detail.Music.%i.Art(fanart)' % (count), artist["fanart"])
                         self.window.setProperty('Detail.Music.%i.Art(thumb)' % (count), artist["thumbnail"])
-                        self.window.setProperty('Detail.Music.%i.Genre' % (count), " / ".join(artist["genre"]))
                         count += 1
-                    if count > 19:
-                        break
-            else:
-                clear_properties()
+                        if count > 19:
+                            break
 
     def _set_properties(self, results):
         # Set language properties
