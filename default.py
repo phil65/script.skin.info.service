@@ -141,23 +141,20 @@ class Daemon:
         if ("result" in json_response) and ('setdetails' in json_response['result']):
             set_movie_properties(json_response)
 
-    def setMovieDetailsforCategory(self, comparator):
-        self.selecteditem = xbmc.getInfoLabel("ListItem.Label")
-        if (self.selecteditem != self.previousitem):
-            if xbmc.getCondVisibility("!Stringcompare(ListItem.Label,..)"):
-                self.previousitem = self.selecteditem
-                clear_properties()
-                count = 1
-                for movie in self.movies["result"]["movies"]:
-                    if self.selecteditem in str(movie[comparator]):
-                        self.window.setProperty('Detail.Movie.%i.Path' % (count), movie["file"])
-                        self.window.setProperty('Detail.Movie.%i.Art(fanart)' % (count), movie["art"].get('fanart', ''))
-                        self.window.setProperty('Detail.Movie.%i.Art(poster)' % (count), movie["art"].get('poster', ''))
-                        count += 1
+    def setMovieDetailsforCategory(self):
+        clear_properties()
+        if self.label != "..":
+            count = 1
+            path = xbmc.getInfoLabel("ListItem.FolderPath")
+            json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["art"]}, "id": 1}' % (path))
+            if ("result" in json_response) and ("files" in json_response["result"]):
+                for movie in json_response["result"]["files"]:
+                    self.window.setProperty('Detail.Movie.%i.Path' % (count), movie["file"])
+                    self.window.setProperty('Detail.Movie.%i.Art(fanart)' % (count), movie["art"].get('fanart', ''))
+                    self.window.setProperty('Detail.Movie.%i.Art(poster)' % (count), movie["art"].get('poster', ''))
+                    count += 1
                     if count > 19:
                         break
-            else:
-                clear_properties()
 
     def setMusicDetailsforCategory(self):
         clear_properties()
