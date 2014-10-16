@@ -2,6 +2,7 @@ import sys
 import xbmc
 import xbmcgui
 import xbmcaddon
+import xbmcplugin
 from Utils import *
 if sys.version_info < (2, 7):
     import simplejson
@@ -22,6 +23,7 @@ class Main:
         self._init_vars()
         self._parse_argv()
         self.process()
+        xbmcplugin.endOfDirectory(self.handle)
 
     def _init_vars(self):
         self.window = xbmcgui.Window(10000)  # Home Window
