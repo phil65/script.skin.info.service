@@ -180,16 +180,18 @@ class Daemon:
         # Clear properties before setting new ones
         clear_properties()
         for item in audio:
-            streams.append(str(item['language']))
-            self.wnd.setProperty('AudioLanguage.%d' % count, item['language'])
-            self.wnd.setProperty('AudioCodec.%d' % count, item['codec'])
-            self.wnd.setProperty('AudioChannels.%d' % count, str(item['channels']))
-            count += 1
+            if str(item['language']) not in streams:
+                streams.append(str(item['language']))
+                self.wnd.setProperty('AudioLanguage.%d' % count, item['language'])
+                self.wnd.setProperty('AudioCodec.%d' % count, item['codec'])
+                self.wnd.setProperty('AudioChannels.%d' % count, str(item['channels']))
+                count += 1
         count = 1
         for item in subtitles:
-            subs.append(str(item['language']))
-            self.wnd.setProperty('SubtitleLanguage.%d' % count, item['language'])
-            count += 1
+            if str(item['language']) not in subtitles:
+                subs.append(str(item['language']))
+                self.wnd.setProperty('SubtitleLanguage.%d' % count, item['language'])
+                count += 1
         wnd.setProperty('SubtitleLanguage', " / ".join(subs))
         wnd.setProperty('AudioLanguage', " / ".join(streams))
      #   self.cleared = False
