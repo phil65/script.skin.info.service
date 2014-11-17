@@ -63,12 +63,14 @@ class Daemon:
             elif xbmc.getCondVisibility("Window.IsActive(videolibrary) + [Container.Content(directors) | Container.Content(actors) | Container.Content(genres) | Container.Content(years) | Container.Content(studios) | Container.Content(countries) | Container.Content(tags)]"):
                 self.selecteditem = xbmc.getInfoLabel("ListItem.Label")
                 if (self.selecteditem != self.previousitem):
+                    clear_properties()
                     self.previousitem = self.selecteditem
                     if (self.selecteditem != "") and (self.selecteditem != ".."):
                         self.setMovieDetailsforCategory()
             elif xbmc.getCondVisibility("Container.Content(years) | Container.Content(genres)"):
                 self.selecteditem = xbmc.getInfoLabel("ListItem.Label")
                 if (self.selecteditem != self.previousitem):
+                    clear_properties()
                     self.previousitem = self.selecteditem
                     if (self.selecteditem != "") and (self.selecteditem != ".."):
                         self.setMusicDetailsforCategory()
@@ -145,13 +147,8 @@ class Daemon:
                     count += 1
                     if count > 19:
                         break
-            else:
-                clear_properties()
-        else:
-            clear_properties()
 
     def setMusicDetailsforCategory(self):
-        clear_properties()
         if xbmc.getInfoLabel("ListItem.Label") != "..":
             count = 1
             path = xbmc.getInfoLabel("ListItem.FolderPath")
@@ -165,10 +162,6 @@ class Daemon:
                         count += 1
                         if count > 19:
                             break
-            else:
-                clear_properties()
-        else:
-            clear_properties()
 
     def _set_properties(self, results):
         # Set language properties
