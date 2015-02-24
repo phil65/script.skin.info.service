@@ -241,7 +241,7 @@ def set_movie_properties(json_response):
         window.setProperty('Set.Movie.%d.Path' % count, media_path(item['file']))
         window.setProperty('Set.Movie.%d.Year' % count, str(item['year']))
         window.setProperty('Set.Movie.%d.Duration' % count, str(item['runtime'] / 60))
-        window.setProperty('Set.Movie.%d.Resolution' % count, streaminfo["videoresolution"])
+        window.setProperty('Set.Movie.%d.VideoResolution' % count, streaminfo["videoresolution"])
         window.setProperty('Set.Movie.%d.Art(clearlogo)' % count, art.get('clearlogo', ''))
         window.setProperty('Set.Movie.%d.Art(discart)' % count, art.get('discart', ''))
         window.setProperty('Set.Movie.%d.Art(fanart)' % count, art.get('fanart', ''))
