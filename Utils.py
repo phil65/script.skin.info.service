@@ -233,6 +233,7 @@ def set_movie_properties(json_response):
     title_header = "[B]" + str(json_response['result']['setdetails']['limits']['total']) + " " + xbmc.getLocalizedString(20342) + "[/B][CR]"
     for item in json_response['result']['setdetails']['movies']:
         art = item['art']
+        streaminfo = media_streamdetails(item['file'].encode('utf-8').lower(), item['streamdetails'])
         window.setProperty('Set.Movie.%d.DBID' % count, str(item.get('movieid')))
         window.setProperty('Set.Movie.%d.Title' % count, item['label'])
         window.setProperty('Set.Movie.%d.Plot' % count, item['plot'])
@@ -240,6 +241,7 @@ def set_movie_properties(json_response):
         window.setProperty('Set.Movie.%d.Path' % count, media_path(item['file']))
         window.setProperty('Set.Movie.%d.Year' % count, str(item['year']))
         window.setProperty('Set.Movie.%d.Duration' % count, str(item['runtime'] / 60))
+        window.setProperty('Set.Movie.%d.VideoResolution' % count, streaminfo["videoresolution"])
         window.setProperty('Set.Movie.%d.Art(clearlogo)' % count, art.get('clearlogo', ''))
         window.setProperty('Set.Movie.%d.Art(discart)' % count, art.get('discart', ''))
         window.setProperty('Set.Movie.%d.Art(fanart)' % count, art.get('fanart', ''))
