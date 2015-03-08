@@ -302,6 +302,8 @@ def clear_properties():
         window.clearProperty('Set.Movies.Writer')
         window.clearProperty('Set.Movies.Director')
         window.clearProperty('Set.Movies.Genre')
+        window.clearProperty('Set.Movies.Country')
+        window.clearProperty('Set.Movies.Studio')
         window.clearProperty('Set.Movies.Years')
         window.clearProperty('Set.Movies.Count')
     else:
