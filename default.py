@@ -3,22 +3,15 @@ import xbmc
 import xbmcgui
 import xbmcaddon
 from Utils import *
-if sys.version_info < (2, 7):
-    import simplejson
-else:
-    import json as simplejson
 
-
-__addon__ = xbmcaddon.Addon()
-__addonid__ = __addon__.getAddonInfo('id')
-__addonversion__ = __addon__.getAddonInfo('version')
-__language__ = __addon__.getLocalizedString
+ADDON = xbmcaddon.Addon()
+ADDON_VERSION = ADDON.getAddonInfo('version')
 
 
 class Daemon:
 
     def __init__(self):
-        log("version %s started" % __addonversion__)
+        log("version %s started" % ADDON_VERSION)
         self._init_vars()
         self.run_backend()
 
@@ -187,11 +180,12 @@ class Daemon:
                 count += 1
         wnd.setProperty('SubtitleLanguage', " / ".join(subs))
         wnd.setProperty('AudioLanguage', " / ".join(streams))
-     #   self.cleared = False
+        wnd.setProperty('SubtitleLanguage.Count', str(len(subs)))
+        wnd.setProperty('AudioLanguage.Count', str(len(streams)))
 
 if (__name__ == "__main__"):
     try:
-        params = dict( arg.split("=") for arg in sys.argv[1].split("&"))
+        params = dict(arg.split("=") for arg in sys.argv[1].split("&"))
     except:
         params = {}
     if xbmc.getCondVisibility("IsEmpty(Window(home).Property(skininfos_daemon_running))"):
