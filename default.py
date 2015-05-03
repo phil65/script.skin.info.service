@@ -21,7 +21,6 @@ class Daemon:
         self.id = None
         self.type = False
         self.Artist_mbid = None
-        HOME.clearProperty('SongToMusicVideo.Path')
 
     def run_backend(self):
         self._stop = False
@@ -183,15 +182,14 @@ class Daemon:
         WND.setProperty('SubtitleLanguage.Count', str(len(subs)))
         WND.setProperty('AudioLanguage.Count', str(len(streams)))
 
-if (__name__ == "__main__"):
-    try:
-        params = dict(arg.split("=") for arg in sys.argv[1].split("&"))
-    except:
-        params = {}
-    if xbmc.getCondVisibility("IsEmpty(Window(home).Property(skininfos_daemon_running))"):
-        xbmc.executebuiltin('SetProperty(skininfos_daemon_running,True,home)')
-        log("starting daemon")
-        Daemon()
-    else:
-        log("Daemon already active")
+try:
+    params = dict(arg.split("=") for arg in sys.argv[1].split("&"))
+except:
+    params = {}
+if xbmc.getCondVisibility("IsEmpty(Window(home).Property(skininfos_daemon_running))"):
+    xbmc.executebuiltin('SetProperty(skininfos_daemon_running,True,home)')
+    log("starting daemon")
+    Daemon()
+else:
+    log("Daemon already active")
 log('finished')
