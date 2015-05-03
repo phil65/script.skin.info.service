@@ -6,6 +6,8 @@ from Utils import *
 
 ADDON = xbmcaddon.Addon()
 ADDON_VERSION = ADDON.getAddonInfo('version')
+WND = xbmcgui.Window(12003)  # Video info dialog
+HOME = xbmcgui.Window(10000)  # Home Window
 
 
 class Daemon:
@@ -16,12 +18,10 @@ class Daemon:
         self.run_backend()
 
     def _init_vars(self):
-        self.window = xbmcgui.Window(10000)  # Home Window
-        self.wnd = xbmcgui.Window(12003)  # Video info dialog
         self.id = None
         self.type = False
         self.Artist_mbid = None
-        self.window.clearProperty('SongToMusicVideo.Path')
+        HOME.clearProperty('SongToMusicVideo.Path')
 
     def run_backend(self):
         self._stop = False
@@ -50,9 +50,9 @@ class Daemon:
                     else:
                         clear_properties()
             elif xbmc.getCondVisibility("Container.Content(seasons) + !Window.IsActive(movieinformation)"):
-                self.window.setProperty("SeasonPoster", xbmc.getInfoLabel("ListItem.Icon"))
-                self.window.setProperty("SeasonID", xbmc.getInfoLabel("ListItem.DBID"))
-                self.window.setProperty("SeasonNumber", xbmc.getInfoLabel("ListItem.Season"))
+                HOME.setProperty("SeasonPoster", xbmc.getInfoLabel("ListItem.Icon"))
+                HOME.setProperty("SeasonID", xbmc.getInfoLabel("ListItem.DBID"))
+                HOME.setProperty("SeasonNumber", xbmc.getInfoLabel("ListItem.Season"))
             elif xbmc.getCondVisibility("Window.IsActive(videolibrary) + [Container.Content(directors) | Container.Content(actors) | Container.Content(genres) | Container.Content(years) | Container.Content(studios) | Container.Content(countries) | Container.Content(tags)]"):
                 self.selecteditem = xbmc.getInfoLabel("ListItem.Label")
                 if (self.selecteditem != self.previousitem):
@@ -107,7 +107,7 @@ class Daemon:
             json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "VideoLibrary.GetSeasons", "params": {"properties": ["thumbnail"], "tvshowid":%s }, "id": 1}' % tvshowid)
             for season in json_response["result"]["seasons"]:
                 if season["label"].split(" ")[-1] == str(seasonnumber):
-                    self.window.setProperty('SeasonPoster', season["thumbnail"])
+                    HOME.setProperty('SeasonPoster', season["thumbnail"])
 
     def _set_musicvideo_details(self, dbid):
         json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMusicVideoDetails", "params": {"properties": ["streamdetails"], "musicvideoid":%s }, "id": 1}' % dbid)
@@ -134,9 +134,9 @@ class Daemon:
             json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["art"]}, "id": 1}' % (path))
             if ("result" in json_response) and ("files" in json_response["result"]):
                 for movie in json_response["result"]["files"]:
-                    self.window.setProperty('Detail.Movie.%i.Path' % (count), movie["file"])
-                    self.window.setProperty('Detail.Movie.%i.Art(fanart)' % (count), movie["art"].get('fanart', ''))
-                    self.window.setProperty('Detail.Movie.%i.Art(poster)' % (count), movie["art"].get('poster', ''))
+                    HOME.setProperty('Detail.Movie.%i.Path' % (count), movie["file"])
+                    HOME.setProperty('Detail.Movie.%i.Art(fanart)' % (count), movie["art"].get('fanart', ''))
+                    HOME.setProperty('Detail.Movie.%i.Art(poster)' % (count), movie["art"].get('poster', ''))
                     count += 1
                     if count > 19:
                         break
@@ -149,9 +149,9 @@ class Daemon:
             if ("result" in json_response) and ("files" in json_response["result"]):
                 for artist in json_response["result"]["files"]:
                     if "id" in artist:
-                        self.window.setProperty('Detail.Music.%i.DBID' % (count), str(artist["id"]))
-                        self.window.setProperty('Detail.Music.%i.Art(fanart)' % (count), artist["fanart"])
-                        self.window.setProperty('Detail.Music.%i.Art(thumb)' % (count), artist["thumbnail"])
+                        HOME.setProperty('Detail.Music.%i.DBID' % (count), str(artist["id"]))
+                        HOME.setProperty('Detail.Music.%i.Art(fanart)' % (count), artist["fanart"])
+                        HOME.setProperty('Detail.Music.%i.Art(thumb)' % (count), artist["thumbnail"])
                         count += 1
                         if count > 19:
                             break
@@ -168,20 +168,20 @@ class Daemon:
         for item in audio:
             if str(item['language']) not in streams:
                 streams.append(str(item['language']))
-                self.wnd.setProperty('AudioLanguage.%d' % count, item['language'])
-                self.wnd.setProperty('AudioCodec.%d' % count, item['codec'])
-                self.wnd.setProperty('AudioChannels.%d' % count, str(item['channels']))
+                WND.setProperty('AudioLanguage.%d' % count, item['language'])
+                WND.setProperty('AudioCodec.%d' % count, item['codec'])
+                WND.setProperty('AudioChannels.%d' % count, str(item['channels']))
                 count += 1
         count = 1
         for item in subtitles:
             if str(item['language']) not in subtitles:
                 subs.append(str(item['language']))
-                self.wnd.setProperty('SubtitleLanguage.%d' % count, item['language'])
+                WND.setProperty('SubtitleLanguage.%d' % count, item['language'])
                 count += 1
-        wnd.setProperty('SubtitleLanguage', " / ".join(subs))
-        wnd.setProperty('AudioLanguage', " / ".join(streams))
-        wnd.setProperty('SubtitleLanguage.Count', str(len(subs)))
-        wnd.setProperty('AudioLanguage.Count', str(len(streams)))
+        WND.setProperty('SubtitleLanguage', " / ".join(subs))
+        WND.setProperty('AudioLanguage', " / ".join(streams))
+        WND.setProperty('SubtitleLanguage.Count', str(len(subs)))
+        WND.setProperty('AudioLanguage.Count', str(len(streams)))
 
 if (__name__ == "__main__"):
     try:
