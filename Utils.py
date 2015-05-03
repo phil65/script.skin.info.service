@@ -2,7 +2,6 @@ import urllib
 import xbmc
 import xbmcaddon
 import xbmcgui
-import datetime
 import urllib2
 import os
 import sys
@@ -11,53 +10,10 @@ if sys.version_info < (2, 7):
 else:
     import json as simplejson
 
-__addon__ = xbmcaddon.Addon()
-__addonid__ = __addon__.getAddonInfo('id')
-__language__ = __addon__.getLocalizedString
-Addon_Data_Path = os.path.join(xbmc.translatePath("special://profile/addon_data/%s" % __addonid__).decode("utf-8"))
-
+ADDON = xbmcaddon.Addon()
+ADDON_ID = ADDON.getAddonInfo('id')
 window = xbmcgui.Window(10000)
 wnd = xbmcgui.Window(12003)
-locallist = []
-
-
-def GetSimilarArtistsInLibrary(id, db_artists):
-    from OnlineMusicInfo import GetSimilarById
-    simi_artists = GetSimilarById(id)
-    if simi_artists is None:
-        log('Last.fm didn\'t return proper response')
-        return None
-    artists = []
-    for (count, simi_artist) in enumerate(simi_artists):
-        for (count, db_artist) in enumerate(db_artists["result"]["artists"]):
-            if db_artist['musicbrainzartistid'] != '':
-                if db_artist['musicbrainzartistid'] == simi_artist['mbid']:
-                    artists.append(db_artist)
-            elif db_artist['artist'] == simi_artist['name']:
-                json_response = db.executeJSONRPC(
-                    '{"jsonrpc": "2.0", "method": "AudioLibrary.GetArtistDetails", "params": {"properties": ["genre", "description", "mood", "style", "born", "died", "formed", "disbanded", "yearsactive", "instrument", "fanart", "thumbnail"], "artistid": %s}, "id": 1}' % str(db_artist['artistid']))
-                json_response = unicode(json_response, 'utf-8', errors='ignore')
-                json_response = simplejson.loads(json_response)
-                item = json_response["result"]["artistdetails"]
-                newartist = {"Title": item['label'],
-                             "Genre": " / ".join(item['genre']),
-                             "Thumb": item['thumbnail'],  # remove
-                             "Fanart": item['fanart'],  # remove
-                             "Art(thumb)": item['thumbnail'],
-                             "Art(fanart)": item['fanart'],
-                             "Description": item['description'],
-                             "Born": item['born'],
-                             "Died": item['died'],
-                             "Formed": item['formed'],
-                             "Disbanded": item['disbanded'],
-                             "YearsActive": " / ".join(item['yearsactive']),
-                             "Style": " / ".join(item['style']),
-                             "Mood": " / ".join(item['mood']),
-                             "Instrument": " / ".join(item['instrument']),
-                             "LibraryPath": 'musicdb://artists/' + str(item['artistid']) + '/'}
-                artists.append(newartist)
-    log('%i of %i artists found in last.FM is in XBMC database' % (len(artists), len(simi_artists)))
-    return artists
 
 
 def Get_JSON_response(query):
@@ -143,7 +99,7 @@ def media_path(path):
 def log(txt):
     if isinstance(txt, str):
         txt = txt.decode("utf-8")
-    message = u'%s: %s' % (__addonid__, txt)
+    message = u'%s: %s' % (ADDON_ID, txt)
     xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGDEBUG)
 
 
@@ -152,10 +108,9 @@ def GetStringFromUrl(encurl):
     while succeed < 5:
         try:
             req = urllib2.Request(encurl)
-            req.add_header('User-agent', 'XBMC/13.2 ( ptemming@gmx.net )')
+            req.add_header('User-agent', 'XBMC/13.2 ( phil65@kodi.tv )')
             res = urllib2.urlopen(req)
             html = res.read()
-       #     log("URL String: " + html)
             return html
         except:
             log("GetStringFromURL: could not get data from %s" % encurl)
