@@ -12,8 +12,8 @@ else:
 
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo('id')
-window = xbmcgui.Window(10000)
-wnd = xbmcgui.Window(12003)
+HOME = xbmcgui.Window(10000)
+INFODIALOG = xbmcgui.Window(12003)
 
 
 def Get_JSON_response(query):
@@ -133,11 +133,11 @@ def set_artist_properties(audio):
     firstyear = 0
     playcount = 0
     for item in audio['result']['albums']:
-        window.setProperty('Artist.Album.%d.Title' % count, item['title'])
-        window.setProperty('Artist.Album.%d.Year' % count, str(item['year']))
-        window.setProperty('Artist.Album.%d.Thumb' % count, item['thumbnail'])
-        window.setProperty('Artist.Album.%d.DBID' % count, str(item.get('albumid')))
-        window.setProperty('Artist.Album.%d.Label' % count, item['albumlabel'])
+        HOME.setProperty('Artist.Album.%d.Title' % count, item['title'])
+        HOME.setProperty('Artist.Album.%d.Year' % count, str(item['year']))
+        HOME.setProperty('Artist.Album.%d.Thumb' % count, item['thumbnail'])
+        HOME.setProperty('Artist.Album.%d.DBID' % count, str(item.get('albumid')))
+        HOME.setProperty('Artist.Album.%d.Label' % count, item['albumlabel'])
         if item['playcount']:
             playcount = playcount + item['playcount']
         if item['year'] > latestyear:
@@ -146,10 +146,10 @@ def set_artist_properties(audio):
             firstyear = item['year']
         count += 1
     if firstyear > 0 and latestyear < 2020:
-        window.setProperty('Artist.Albums.Newest', str(latestyear))
-        window.setProperty('Artist.Albums.Oldest', str(firstyear))
-    window.setProperty('Artist.Albums.Count', str(audio['result']['limits']['total']))
-    window.setProperty('Artist.Albums.Playcount', str(playcount))
+        HOME.setProperty('Artist.Albums.Newest', str(latestyear))
+        HOME.setProperty('Artist.Albums.Oldest', str(firstyear))
+    HOME.setProperty('Artist.Albums.Count', str(audio['result']['limits']['total']))
+    HOME.setProperty('Artist.Albums.Playcount', str(playcount))
 
 
 def set_album_properties(json_response):
@@ -158,20 +158,20 @@ def set_album_properties(json_response):
     discnumber = 0
     tracklist = ""
     for item in json_response['result']['songs']:
-        window.setProperty('Album.Song.%d.Title' % count, item['title'])
+        HOME.setProperty('Album.Song.%d.Title' % count, item['title'])
         tracklist += "[B]" + str(item['track']) + "[/B]: " + item['title'] + "[CR]"
         array = item['file'].split('.')
-        window.setProperty('Album.Song.%d.FileExtension' % count, str(array[-1]))
+        HOME.setProperty('Album.Song.%d.FileExtension' % count, str(array[-1]))
         if item['disc'] > discnumber:
             discnumber = item['disc']
         duration += item['duration']
         count += 1
     minutes = duration / 60
     seconds = duration % 60
-    window.setProperty('Album.Songs.Discs', str(discnumber))
-    window.setProperty('Album.Songs.Duration', str(minutes).zfill(2) + ":" + str(seconds).zfill(2))
-    window.setProperty('Album.Songs.Tracklist', tracklist)
-    window.setProperty('Album.Songs.Count', str(json_response['result']['limits']['total']))
+    HOME.setProperty('Album.Songs.Discs', str(discnumber))
+    HOME.setProperty('Album.Songs.Duration', str(minutes).zfill(2) + ":" + str(seconds).zfill(2))
+    HOME.setProperty('Album.Songs.Tracklist', tracklist)
+    HOME.setProperty('Album.Songs.Count', str(json_response['result']['limits']['total']))
 
 
 def set_movie_properties(json_response):
@@ -189,20 +189,20 @@ def set_movie_properties(json_response):
     for item in json_response['result']['setdetails']['movies']:
         art = item['art']
         streaminfo = media_streamdetails(item['file'].encode('utf-8').lower(), item['streamdetails'])
-        window.setProperty('Set.Movie.%d.DBID' % count, str(item.get('movieid')))
-        window.setProperty('Set.Movie.%d.Title' % count, item['label'])
-        window.setProperty('Set.Movie.%d.Plot' % count, item['plot'])
-        window.setProperty('Set.Movie.%d.PlotOutline' % count, item['plotoutline'])
-        window.setProperty('Set.Movie.%d.Path' % count, media_path(item['file']))
-        window.setProperty('Set.Movie.%d.Year' % count, str(item['year']))
-        window.setProperty('Set.Movie.%d.Duration' % count, str(item['runtime'] / 60))
-        window.setProperty('Set.Movie.%d.VideoResolution' % count, streaminfo["videoresolution"])
-        window.setProperty('Set.Movie.%d.Art(clearlogo)' % count, art.get('clearlogo', ''))
-        window.setProperty('Set.Movie.%d.Art(discart)' % count, art.get('discart', ''))
-        window.setProperty('Set.Movie.%d.Art(fanart)' % count, art.get('fanart', ''))
-        window.setProperty('Set.Movie.%d.Art(poster)' % count, art.get('poster', ''))
-        window.setProperty('Detail.Movie.%d.Art(fanart)' % count, art.get('fanart', ''))  # hacked in
-        window.setProperty('Detail.Movie.%d.Art(poster)' % count, art.get('poster', ''))
+        HOME.setProperty('Set.Movie.%d.DBID' % count, str(item.get('movieid')))
+        HOME.setProperty('Set.Movie.%d.Title' % count, item['label'])
+        HOME.setProperty('Set.Movie.%d.Plot' % count, item['plot'])
+        HOME.setProperty('Set.Movie.%d.PlotOutline' % count, item['plotoutline'])
+        HOME.setProperty('Set.Movie.%d.Path' % count, media_path(item['file']))
+        HOME.setProperty('Set.Movie.%d.Year' % count, str(item['year']))
+        HOME.setProperty('Set.Movie.%d.Duration' % count, str(item['runtime'] / 60))
+        HOME.setProperty('Set.Movie.%d.VideoResolution' % count, streaminfo["videoresolution"])
+        HOME.setProperty('Set.Movie.%d.Art(clearlogo)' % count, art.get('clearlogo', ''))
+        HOME.setProperty('Set.Movie.%d.Art(discart)' % count, art.get('discart', ''))
+        HOME.setProperty('Set.Movie.%d.Art(fanart)' % count, art.get('fanart', ''))
+        HOME.setProperty('Set.Movie.%d.Art(poster)' % count, art.get('poster', ''))
+        HOME.setProperty('Detail.Movie.%d.Art(fanart)' % count, art.get('fanart', ''))  # hacked in
+        HOME.setProperty('Detail.Movie.%d.Art(poster)' % count, art.get('poster', ''))
         title_list += "[I]" + item['label'] + " (" + str(item['year']) + ")[/I][CR]"
         if item['plotoutline']:
             plot += "[B]" + item['label'] + " (" + str(item['year']) + ")[/B][CR]" + item['plotoutline'] + "[CR][CR]"
@@ -221,73 +221,73 @@ def set_movie_properties(json_response):
         if item.get("studio"):
             studio += [s for s in item["studio"] if s and s not in studio]
         years.append(str(item['year']))
-    window.setProperty('Set.Movies.Plot', plot)
+    HOME.setProperty('Set.Movies.Plot', plot)
     if json_response['result']['setdetails']['limits']['total'] > 1:
-        window.setProperty('Set.Movies.ExtendedPlot', title_header + title_list + "[CR]" + plot)
+        HOME.setProperty('Set.Movies.ExtendedPlot', title_header + title_list + "[CR]" + plot)
     else:
-        window.setProperty('Set.Movies.ExtendedPlot', plot)
-    window.setProperty('Set.Movies.Title', title_list)
-    window.setProperty('Set.Movies.Runtime', str(runtime / 60))
-    window.setProperty('Set.Movies.Writer', " / ".join(writer))
-    window.setProperty('Set.Movies.Director', " / ".join(director))
-    window.setProperty('Set.Movies.Genre', " / ".join(genre))
-    window.setProperty('Set.Movies.Country', " / ".join(country))
-    window.setProperty('Set.Movies.Studio', " / ".join(studio))
-    window.setProperty('Set.Movies.Years', " / ".join(years))
-    window.setProperty('Set.Movies.Count', str(json_response['result']['setdetails']['limits']['total']))
+        HOME.setProperty('Set.Movies.ExtendedPlot', plot)
+    HOME.setProperty('Set.Movies.Title', title_list)
+    HOME.setProperty('Set.Movies.Runtime', str(runtime / 60))
+    HOME.setProperty('Set.Movies.Writer', " / ".join(writer))
+    HOME.setProperty('Set.Movies.Director', " / ".join(director))
+    HOME.setProperty('Set.Movies.Genre', " / ".join(genre))
+    HOME.setProperty('Set.Movies.Country', " / ".join(country))
+    HOME.setProperty('Set.Movies.Studio', " / ".join(studio))
+    HOME.setProperty('Set.Movies.Years', " / ".join(years))
+    HOME.setProperty('Set.Movies.Count', str(json_response['result']['setdetails']['limits']['total']))
 
 
 def clear_properties():
     if xbmc.getCondVisibility("Window.IsActive(videolibrary)"):
         for i in range(1, 40):
-            window.clearProperty('Set.Movie.%d.Art(clearlogo)' % i)
-            window.clearProperty('Set.Movie.%d.Art(fanart)' % i)
-            window.clearProperty('Set.Movie.%d.Art(poster)' % i)
-            window.clearProperty('Set.Movie.%d.Art(discart)' % i)
-            window.clearProperty('Detail.Movie.%d.Art(poster)' % i)
-            window.clearProperty('Detail.Movie.%d.Art(fanart)' % i)
-            window.clearProperty('Detail.Movie.%d.Path' % i)
-            wnd.clearProperty('AudioLanguage.%d' % i)
-            wnd.clearProperty('AudioCodec.%d' % i)
-            wnd.clearProperty('AudioChannels.%d' % i)
-            wnd.clearProperty('SubtitleLanguage.%d' % i)
-        window.clearProperty('Set.Movies.Plot')
-        window.clearProperty('Set.Movies.ExtendedPlot')
-        window.clearProperty('Set.Movies.Runtime')
-        window.clearProperty('Set.Movies.Writer')
-        window.clearProperty('Set.Movies.Director')
-        window.clearProperty('Set.Movies.Genre')
-        window.clearProperty('Set.Movies.Country')
-        window.clearProperty('Set.Movies.Studio')
-        window.clearProperty('Set.Movies.Years')
-        window.clearProperty('Set.Movies.Count')
+            HOME.clearProperty('Set.Movie.%d.Art(clearlogo)' % i)
+            HOME.clearProperty('Set.Movie.%d.Art(fanart)' % i)
+            HOME.clearProperty('Set.Movie.%d.Art(poster)' % i)
+            HOME.clearProperty('Set.Movie.%d.Art(discart)' % i)
+            HOME.clearProperty('Detail.Movie.%d.Art(poster)' % i)
+            HOME.clearProperty('Detail.Movie.%d.Art(fanart)' % i)
+            HOME.clearProperty('Detail.Movie.%d.Path' % i)
+            INFODIALOG.clearProperty('AudioLanguage.%d' % i)
+            INFODIALOG.clearProperty('AudioCodec.%d' % i)
+            INFODIALOG.clearProperty('AudioChannels.%d' % i)
+            INFODIALOG.clearProperty('SubtitleLanguage.%d' % i)
+        HOME.clearProperty('Set.Movies.Plot')
+        HOME.clearProperty('Set.Movies.ExtendedPlot')
+        HOME.clearProperty('Set.Movies.Runtime')
+        HOME.clearProperty('Set.Movies.Writer')
+        HOME.clearProperty('Set.Movies.Director')
+        HOME.clearProperty('Set.Movies.Genre')
+        HOME.clearProperty('Set.Movies.Country')
+        HOME.clearProperty('Set.Movies.Studio')
+        HOME.clearProperty('Set.Movies.Years')
+        HOME.clearProperty('Set.Movies.Count')
     else:
         for i in range(1, 40):
-            window.clearProperty('Artist.Album.%d.Title' % i)
-            window.clearProperty('Artist.Album.%d.Plot' % i)
-            window.clearProperty('Artist.Album.%d.PlotOutline' % i)
-            window.clearProperty('Artist.Album.%d.Year' % i)
-            window.clearProperty('Artist.Album.%d.Duration' % i)
-            window.clearProperty('Artist.Album.%d.Thumb' % i)
-            window.clearProperty('Artist.Album.%d.ID' % i)
-            window.clearProperty('Album.Song.%d.Title' % i)
-            window.clearProperty('Album.Song.%d.FileExtension' % i)
-            window.clearProperty('Detail.Music.%d.Art(fanart)' % i)
-            window.clearProperty('Detail.Music.%d.Art(thumb)' % i)
-            window.clearProperty('Detail.Music.%d.DBID' % i)
-            window.clearProperty('Detail.Music.%d.Genre' % i)
-            window.clearProperty('Detail.Music.%d.Title' % i)
-            window.clearProperty('Detail.Music.%d.Year' % i)
-            window.clearProperty('Detail.Music.%d.Artist' % i)
-        window.clearProperty('Album.Songs.TrackList')
-        window.clearProperty('Album.Songs.Discs')
-        window.clearProperty('Artist.Albums.Newest')
-        window.clearProperty('Artist.Albums.Oldest')
-        window.clearProperty('Artist.Albums.Count')
-        window.clearProperty('Artist.Albums.Playcount')
-        window.clearProperty('Album.Songs.Discs')
-        window.clearProperty('Album.Songs.Duration')
-        window.clearProperty('Album.Songs.Count')
+            HOME.clearProperty('Artist.Album.%d.Title' % i)
+            HOME.clearProperty('Artist.Album.%d.Plot' % i)
+            HOME.clearProperty('Artist.Album.%d.PlotOutline' % i)
+            HOME.clearProperty('Artist.Album.%d.Year' % i)
+            HOME.clearProperty('Artist.Album.%d.Duration' % i)
+            HOME.clearProperty('Artist.Album.%d.Thumb' % i)
+            HOME.clearProperty('Artist.Album.%d.ID' % i)
+            HOME.clearProperty('Album.Song.%d.Title' % i)
+            HOME.clearProperty('Album.Song.%d.FileExtension' % i)
+            HOME.clearProperty('Detail.Music.%d.Art(fanart)' % i)
+            HOME.clearProperty('Detail.Music.%d.Art(thumb)' % i)
+            HOME.clearProperty('Detail.Music.%d.DBID' % i)
+            HOME.clearProperty('Detail.Music.%d.Genre' % i)
+            HOME.clearProperty('Detail.Music.%d.Title' % i)
+            HOME.clearProperty('Detail.Music.%d.Year' % i)
+            HOME.clearProperty('Detail.Music.%d.Artist' % i)
+        HOME.clearProperty('Album.Songs.TrackList')
+        HOME.clearProperty('Album.Songs.Discs')
+        HOME.clearProperty('Artist.Albums.Newest')
+        HOME.clearProperty('Artist.Albums.Oldest')
+        HOME.clearProperty('Artist.Albums.Count')
+        HOME.clearProperty('Artist.Albums.Playcount')
+        HOME.clearProperty('Album.Songs.Discs')
+        HOME.clearProperty('Album.Songs.Duration')
+        HOME.clearProperty('Album.Songs.Count')
 
 
 def passDataToSkin(name, data, prefix="", debug=False):
@@ -297,10 +297,10 @@ def passDataToSkin(name, data, prefix="", debug=False):
             if debug:
                 log("%s%s.%i = %s" % (prefix, name, count + 1, str(result)))
             for (key, value) in result.iteritems():
-                window.setProperty('%s%s.%i.%s' % (prefix, name, count + 1, str(key)), unicode(value))
+                HOME.setProperty('%s%s.%i.%s' % (prefix, name, count + 1, str(key)), unicode(value))
                 if debug:
                     log('%s%s.%i.%s --> ' % (prefix, name, count + 1, str(key)) + unicode(value))
-        window.setProperty('%s%s.Count' % (prefix, name), str(len(data)))
+        HOME.setProperty('%s%s.Count' % (prefix, name), str(len(data)))
     else:
-        window.setProperty('%s%s.Count' % (prefix, name), '0')
+        HOME.setProperty('%s%s.Count' % (prefix, name), '0')
         log("%s%s.Count = None" % (prefix, name))
