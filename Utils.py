@@ -222,6 +222,7 @@ def set_movie_properties(json_response):
             studio += [s for s in item["studio"] if s and s not in studio]
         years.append(str(item['year']))
     HOME.setProperty('Set.Movies.Plot', plot)
+    HOME.setProperty('Set.Movies.List', title_header + title_list)
     if json_response['result']['setdetails']['limits']['total'] > 1:
         HOME.setProperty('Set.Movies.ExtendedPlot', title_header + title_list + "[CR]" + plot)
     else:
