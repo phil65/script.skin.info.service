@@ -239,7 +239,7 @@ def set_movie_properties(json_response):
 
 
 def clear_properties():
-    if xbmc.getCondVisibility("Window.IsActive(videolibrary)"):
+    if xbmc.getCondVisibility("Window.IsActive(videos)"):
         for i in range(1, 40):
             HOME.clearProperty('Set.Movie.%d.Art(clearlogo)' % i)
             HOME.clearProperty('Set.Movie.%d.Art(fanart)' % i)
