@@ -52,7 +52,7 @@ class Daemon:
                 HOME.setProperty("SeasonPoster", xbmc.getInfoLabel("ListItem.Icon"))
                 HOME.setProperty("SeasonID", xbmc.getInfoLabel("ListItem.DBID"))
                 HOME.setProperty("SeasonNumber", xbmc.getInfoLabel("ListItem.Season"))
-            elif xbmc.getCondVisibility("Window.IsActive(videolibrary) + [Container.Content(directors) | Container.Content(actors) | Container.Content(genres) | Container.Content(years) | Container.Content(studios) | Container.Content(countries) | Container.Content(tags)]"):
+            elif xbmc.getCondVisibility("Window.IsActive(videos) + [Container.Content(directors) | Container.Content(actors) | Container.Content(genres) | Container.Content(years) | Container.Content(studios) | Container.Content(countries) | Container.Content(tags)]"):
                 self.selecteditem = xbmc.getInfoLabel("ListItem.Label")
                 if (self.selecteditem != self.previousitem):
                     clear_properties()
