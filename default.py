@@ -36,7 +36,7 @@ class Daemon:
                             self._set_artist_details(self.selecteditem)
                         elif xbmc.getCondVisibility("Container.Content(albums)"):
                             self._set_album_details(self.selecteditem)
-                        elif xbmc.getCondVisibility("SubString(ListItem.Path,videodb://movies/sets/,left)"):
+                        elif xbmc.getCondVisibility("String.StartsWith(ListItem.Path,videodb://movies/sets/)"):
                             self._set_movieset_details(self.selecteditem)
                         elif xbmc.getCondVisibility("Container.Content(movies)"):
                             self._set_movie_details(self.selecteditem)
@@ -73,7 +73,7 @@ class Daemon:
                 self.selecteditem = ""
                 clear_properties()
                 xbmc.sleep(500)
-            if xbmc.getCondVisibility("IsEmpty(Window(home).Property(skininfos_daemon_running))"):
+            if xbmc.getCondVisibility("String.IsEmpty(Window(home).Property(skininfos_daemon_running))"):
                 clear_properties()
                 self._stop = True
             xbmc.sleep(100)
@@ -186,7 +186,7 @@ try:
     params = dict(arg.split("=") for arg in sys.argv[1].split("&"))
 except:
     params = {}
-if xbmc.getCondVisibility("IsEmpty(Window(home).Property(skininfos_daemon_running))"):
+if xbmc.getCondVisibility("String.IsEmpty(Window(home).Property(skininfos_daemon_running))"):
     xbmc.executebuiltin('SetProperty(skininfos_daemon_running,True,home)')
     log("starting daemon")
     Daemon()
