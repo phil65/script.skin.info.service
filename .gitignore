@@ -52,3 +52,5 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+/skin.info.service.sublime-project
+/skin.info.service.sublime-workspace

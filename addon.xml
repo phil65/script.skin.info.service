@@ -14,8 +14,9 @@
 		<description lang="en">This script fetches extended information for several media types (artists, albums, movie sets etc.). Needs skin support.</description>
 		<platform>all</platform>
 		<license>GNU GENERAL PUBLIC LICENSE Version 2, June 1991</license>
-		<forum>-</forum>
-		<source>-</source>
-		<email>-</email>
+		<forum />
+		<source />
+		<email />
+		<news>Kodi v18 updates</news>
 	</extension>
 </addon>
