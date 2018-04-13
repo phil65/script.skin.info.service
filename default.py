@@ -36,7 +36,7 @@ class Daemon:
                             self._set_artist_details(self.selecteditem)
                         elif xbmc.getCondVisibility("Container.Content(albums)"):
                             self._set_album_details(self.selecteditem)
-                        elif xbmc.getCondVisibility("String.StartsWith(ListItem.Path,videodb://movies/sets/)"):
+                        elif xbmc.getCondVisibility("ListItem.IsCollection"):
                             self._set_movieset_details(self.selecteditem)
                         elif xbmc.getCondVisibility("Container.Content(movies)"):
                             self._set_movie_details(self.selecteditem)

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.skin.info.service" name="Skin Info Service" version="1.0.2" provider-name="phil65">
+<addon id="script.skin.info.service" name="Skin Info Service" version="1.0.3" provider-name="phil65">
 	<requires>
 		<import addon="xbmc.python" version="2.25.0"/>
 	</requires>
 	<extension point="xbmc.python.library"          library="default.py" />
-    <extension point="xbmc.python.script"           library="default.py">
-        <provides>executable</provides>
-    </extension>
+	<extension point="xbmc.python.script"           library="default.py">
+		<provides>executable</provides>
+	</extension>
 	<extension point="xbmc.addon.metadata">
 		<language/>
 		<summary lang="en">Script used by skins to show extended media info.</summary>
@@ -17,8 +17,8 @@
 		<source />
 		<email />
 		<assets>
-            <icon>icon.png</icon>
-        </assets>
+			<icon>icon.png</icon>
+		</assets>
 		<news>Kodi v18 updates</news>
 	</extension>
 </addon>
