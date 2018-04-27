@@ -8,6 +8,7 @@ ADDON = xbmcaddon.Addon()
 ADDON_VERSION = ADDON.getAddonInfo('version')
 WND = xbmcgui.Window(12003)  # Video info dialog
 HOME = xbmcgui.Window(10000)  # Home Window
+KODI_NEW = bool(int(xbmc.getInfoLabel("System.BuildVersion")[:2]) > 16)
 
 
 class Daemon:
@@ -36,7 +37,9 @@ class Daemon:
                             self._set_artist_details(self.selecteditem)
                         elif xbmc.getCondVisibility("Container.Content(albums)"):
                             self._set_album_details(self.selecteditem)
-                        elif xbmc.getCondVisibility("SubString(ListItem.Path,videodb://movies/sets/,left)"):
+                        elif KODI_NEW and xbmc.getCondVisibility("String.Contains(ListItem.Path,videodb://movies/sets/)"):
+                            self._set_movieset_details(self.selecteditem)
+                        elif (not KODI_NEW) and xbmc.getCondVisibility("SubString(ListItem.Path,videodb://movies/sets/,left)"):
                             self._set_movieset_details(self.selecteditem)
                         elif xbmc.getCondVisibility("Container.Content(movies)"):
                             self._set_movie_details(self.selecteditem)
@@ -186,7 +189,11 @@ try:
     params = dict(arg.split("=") for arg in sys.argv[1].split("&"))
 except:
     params = {}
-if xbmc.getCondVisibility("IsEmpty(Window(home).Property(skininfos_daemon_running))"):
+if KODI_NEW and xbmc.getCondVisibility("String.IsEmpty(Window(home).Property(skininfos_daemon_running))"):
+    xbmc.executebuiltin('SetProperty(skininfos_daemon_running,True,home)')
+    log("starting daemon")
+    Daemon()
+elif  (not KODI_NEW) and xbmc.getCondVisibility("IsEmpty(Window(home).Property(skininfos_daemon_running))"):
     xbmc.executebuiltin('SetProperty(skininfos_daemon_running,True,home)')
     log("starting daemon")
     Daemon()

@@ -120,7 +120,7 @@ def GetStringFromUrl(encurl):
 
 
 def Notify(header, line='', line2='', line3=''):
-    xbmc.executebuiltin('Notification(%s, %s, %s, %s)' % (header, line, line2, line3))
+    xbmc.executebuiltin('Notification(%s, %s)' % (header, line))
 
 
 def prettyprint(string):
