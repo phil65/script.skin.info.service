@@ -5,10 +5,7 @@ import xbmcgui
 import urllib2
 import os
 import sys
-if sys.version_info < (2, 7):
-    import simplejson
-else:
-    import json as simplejson
+import json as simplejson
 
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo('id')
@@ -120,7 +117,7 @@ def GetStringFromUrl(encurl):
 
 
 def Notify(header, line='', line2='', line3=''):
-    xbmc.executebuiltin('Notification(%s, %s, %s, %s)' % (header, line, line2, line3))
+    xbmcgui.Dialog().notification('%s, %s, %s, %s') % (header, line, line2, line3)
 
 
 def prettyprint(string):
