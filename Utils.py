@@ -1,11 +1,13 @@
-import urllib
 import xbmc
 import xbmcaddon
 import xbmcgui
-import urllib2
 import os
 import sys
 import json as simplejson
+if sys.version_info < (2, 9):
+    import urllib, urllib2
+else:
+    import urllib.request, urllib.parse, urllib.error
 
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo('id')
@@ -105,7 +107,7 @@ def GetStringFromUrl(encurl):
     while succeed < 5:
         try:
             req = urllib2.Request(encurl)
-            req.add_header('User-agent', 'XBMC/13.2 ( phil65@kodi.tv )')
+            req.add_header('User-agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
             res = urllib2.urlopen(req)
             html = res.read()
             return html
@@ -117,7 +119,7 @@ def GetStringFromUrl(encurl):
 
 
 def Notify(header, line='', line2='', line3=''):
-    xbmcgui.Dialog().notification('%s, %s, %s, %s') % (header, line, line2, line3)
+    xbmcgui.Dialog().notification(('%s, %s, %s, %s') % (header, line, line2, line3))
 
 
 def prettyprint(string):
