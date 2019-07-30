@@ -17,7 +17,10 @@ INFODIALOG = xbmcgui.Window(12003)
 
 def Get_JSON_response(query):
     json_response = xbmc.executeJSONRPC(query)
-    json_response = unicode(json_response, 'utf-8', errors='ignore')
+    if sys.version_info < (2, 9):
+        json_response = unicode(json_response, 'utf-8', errors='ignore')
+    else:
+        json_response = json_response
     return simplejson.loads(json_response)
 
 
@@ -25,7 +28,7 @@ def media_streamdetails(filename, streamdetails):
     info = {}
     video = streamdetails['video']
     audio = streamdetails['audio']
-    if '3d' in filename:
+    if xbmc.getCondVisibility("ListItem.IsStereoscopic"):
         info['videoresolution'] = '3d'
     elif video:
         videowidth = video[0]['width']
@@ -96,10 +99,16 @@ def media_path(path):
 
 
 def log(txt):
-    if isinstance(txt, str):
-        txt = txt.decode("utf-8")
+    try:
+        if isinstance(txt, str):
+            txt = txt.decode("utf-8")
+    except AttributeError:
+        pass
     message = u'%s: %s' % (ADDON_ID, txt)
-    xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGDEBUG)
+    try:
+        xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGDEBUG)
+    except TypeError:
+        xbmc.log(msg=message, level=xbmc.LOGDEBUG)
 
 
 def GetStringFromUrl(encurl):

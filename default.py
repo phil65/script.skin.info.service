@@ -31,7 +31,7 @@ class Daemon:
                 self.selecteditem = xbmc.getInfoLabel("ListItem.DBID")
                 if (self.selecteditem != self.previousitem):
                     self.previousitem = self.selecteditem
-                    if (self.selecteditem is not "") and (self.selecteditem > -1):
+                    if (self.selecteditem is not ""):
                         if xbmc.getCondVisibility("Container.Content(artists)"):
                             self._set_artist_details(self.selecteditem)
                         elif xbmc.getCondVisibility("Container.Content(albums)"):
