@@ -36,7 +36,7 @@ class Daemon:
                             self._set_artist_details(self.selecteditem)
                         elif xbmc.getCondVisibility("Container.Content(albums)"):
                             self._set_album_details(self.selecteditem)
-                        elif xbmc.getCondVisibility("ListItem.IsCollection"):
+                        elif xbmc.getCondVisibility("ListItem.IsCollection | String.IsEqual(ListItem.DBTYPE,set)"):
                             self._set_movieset_details(self.selecteditem)
                         elif xbmc.getCondVisibility("Container.Content(movies)"):
                             self._set_movie_details(self.selecteditem)
@@ -57,14 +57,14 @@ class Daemon:
                 if (self.selecteditem != self.previousitem):
                     clear_properties()
                     self.previousitem = self.selecteditem
-                    if (self.selecteditem != "") and (self.selecteditem != ".."):
+                    if (self.selecteditem != "") and xbmc.getCondVisibility("!ListItem.IsParentFolder"):
                         self.setMovieDetailsforCategory()
             elif xbmc.getCondVisibility("Container.Content(years) | Container.Content(genres)"):
                 self.selecteditem = xbmc.getInfoLabel("ListItem.Label")
                 if (self.selecteditem != self.previousitem):
                     clear_properties()
                     self.previousitem = self.selecteditem
-                    if (self.selecteditem != "") and (self.selecteditem != ".."):
+                    if (self.selecteditem != "") and xbmc.getCondVisibility("!ListItem.IsParentFolder"):
                         self.setMusicDetailsforCategory()
             elif xbmc.getCondVisibility('Window.IsActive(screensaver)'):
                 xbmc.sleep(1000)
@@ -106,7 +106,7 @@ class Daemon:
             json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "VideoLibrary.GetSeasons", "params": {"properties": ["thumbnail"], "tvshowid":%s }, "id": 1}' % tvshowid)
             for season in json_response["result"]["seasons"]:
                 if season["label"].split(" ")[-1] == str(seasonnumber):
-                    HOME.setProperty('SeasonPoster', season["thumbnail"])
+                    HOME.setProperty('SkinInfo.SeasonPoster', season["thumbnail"])
 
     def _set_musicvideo_details(self, dbid):
         json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMusicVideoDetails", "params": {"properties": ["streamdetails"], "musicvideoid":%s }, "id": 1}' % dbid)
@@ -127,30 +127,30 @@ class Daemon:
             set_movie_properties(json_response)
 
     def setMovieDetailsforCategory(self):
-        if xbmc.getInfoLabel("ListItem.Label") != "..":
+        if xbmc.getCondVisibility("!ListItem.IsParentFolder"):
             count = 1
             path = xbmc.getInfoLabel("ListItem.FolderPath")
             json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "video", "properties": ["art"]}, "id": 1}' % (path))
             if ("result" in json_response) and ("files" in json_response["result"]):
                 for movie in json_response["result"]["files"]:
-                    HOME.setProperty('Detail.Movie.%i.Path' % (count), movie["file"])
-                    HOME.setProperty('Detail.Movie.%i.Art(fanart)' % (count), movie["art"].get('fanart', ''))
-                    HOME.setProperty('Detail.Movie.%i.Art(poster)' % (count), movie["art"].get('poster', ''))
+                    HOME.setProperty('SkinInfo.Detail.Movie.%i.Path' % (count), movie["file"])
+                    HOME.setProperty('SkinInfo.Detail.Movie.%i.Art(fanart)' % (count), movie["art"].get('fanart', ''))
+                    HOME.setProperty('SkinInfo.Detail.Movie.%i.Art(poster)' % (count), movie["art"].get('poster', ''))
                     count += 1
                     if count > 19:
                         break
 
     def setMusicDetailsforCategory(self):
-        if xbmc.getInfoLabel("ListItem.Label") != "..":
+        if xbmc.getCondVisibility("!ListItem.IsParentFolder"):
             count = 1
             path = xbmc.getInfoLabel("ListItem.FolderPath")
             json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "Files.GetDirectory", "params": {"directory": "%s", "media": "music", "properties": ["fanart", "thumbnail"]}, "id": 1}' % (path))
             if ("result" in json_response) and ("files" in json_response["result"]):
                 for artist in json_response["result"]["files"]:
                     if "id" in artist:
-                        HOME.setProperty('Detail.Music.%i.DBID' % (count), str(artist["id"]))
-                        HOME.setProperty('Detail.Music.%i.Art(fanart)' % (count), artist["fanart"])
-                        HOME.setProperty('Detail.Music.%i.Art(thumb)' % (count), artist["thumbnail"])
+                        HOME.setProperty('SkinInfo.Detail.Music.%i.DBID' % (count), str(artist["id"]))
+                        HOME.setProperty('SkinInfo.Detail.Music.%i.Art(fanart)' % (count), artist["fanart"])
+                        HOME.setProperty('SkinInfo.Detail.Music.%i.Art(thumb)' % (count), artist["thumbnail"])
                         count += 1
                         if count > 19:
                             break
@@ -167,20 +167,20 @@ class Daemon:
         for item in audio:
             if str(item['language']) not in streams:
                 streams.append(str(item['language']))
-                WND.setProperty('AudioLanguage.%d' % count, item['language'])
-                WND.setProperty('AudioCodec.%d' % count, item['codec'])
-                WND.setProperty('AudioChannels.%d' % count, str(item['channels']))
+                WND.setProperty('SkinInfo.AudioLanguage.%d' % count, item['language'])
+                WND.setProperty('SkinInfo.AudioCodec.%d' % count, item['codec'])
+                WND.setProperty('SkinInfo.AudioChannels.%d' % count, str(item['channels']))
                 count += 1
         count = 1
         for item in subtitles:
             if str(item['language']) not in subtitles:
                 subs.append(str(item['language']))
-                WND.setProperty('SubtitleLanguage.%d' % count, item['language'])
+                WND.setProperty('SkinInfo.SubtitleLanguage.%d' % count, item['language'])
                 count += 1
-        WND.setProperty('SubtitleLanguage', " / ".join(subs))
-        WND.setProperty('AudioLanguage', " / ".join(streams))
-        WND.setProperty('SubtitleLanguage.Count', str(len(subs)))
-        WND.setProperty('AudioLanguage.Count', str(len(streams)))
+        WND.setProperty('SkinInfo.SubtitleLanguage', " / ".join(subs))
+        WND.setProperty('SkinInfo.AudioLanguage', " / ".join(streams))
+        WND.setProperty('SkinInfo.SubtitleLanguage.Count', str(len(subs)))
+        WND.setProperty('SkinInfo.AudioLanguage.Count', str(len(streams)))
 
 try:
     params = dict(arg.split("=") for arg in sys.argv[1].split("&"))
