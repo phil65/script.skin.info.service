@@ -9,52 +9,52 @@ New properties:
 
 For artists:
 Window(home).Property(...)
-    'Artist.Album.%d.Title' % i
-    'Artist.Album.%d.Plot' % i
-    'Artist.Album.%d.PlotOutline' % i
-    'Artist.Album.%d.Year' % i
-    'Artist.Album.%d.Duration' % i
-    'Artist.Album.%d.Thumb' % i
-    'Artist.Album.%d.ID' % i
-    'Artist.Albums.Newest'   
-    'Artist.Albums.Oldest'   
-    'Artist.Albums.Count'   
-    'Artist.Albums.Playcount'  
+    'SkinInfo.Artist.Album.%d.Title' % i
+    'SkinInfo.Artist.Album.%d.Plot' % i
+    'SkinInfo.Artist.Album.%d.PlotOutline' % i
+    'SkinInfo.Artist.Album.%d.Year' % i
+    'SkinInfo.Artist.Album.%d.Duration' % i
+    'SkinInfo.Artist.Album.%d.Thumb' % i
+    'SkinInfo.Artist.Album.%d.ID' % i
+    'SkinInfo.Artist.Albums.Newest'
+    'SkinInfo.Artist.Albums.Oldest'
+    'SkinInfo.Artist.Albums.Count'
+    'SkinInfo.Artist.Albums.Playcount'
 
 For Albums:
 Window(home).Property(...)
-    'Album.Song.%d.Title' % i
-    'Album.Song.%d.FileExtension' % i
-    'Album.Songs.TrackList'   
-    'Album.Songs.Discs' 
-    'Album.Songs.Discs'   
-    'Album.Songs.Duration'   
-    'Album.Songs.Count' 
+    'SkinInfo.Album.Song.%d.Title' % i
+    'SkinInfo.Album.Song.%d.FileExtension' % i
+    'SkinInfo.Album.Songs.TrackList'
+    'SkinInfo.Album.Songs.Discs'
+    'SkinInfo.Album.Songs.Discs'
+    'SkinInfo.Album.Songs.Duration'
+    'SkinInfo.Album.Songs.Count'
 
 For movie sets:
 Window(home).Property(...)
-    'Set.Movie.%d.Art(clearlogo)' % i
-    'Set.Movie.%d.Art(fanart)' % i
-    'Set.Movie.%d.Art(poster)' % i
-    'Set.Movie.%d.Art(discart)' % i
-    'Set.Movies.Plot'   
-    'Set.Movies.ExtendedPlot'   
-    'Set.Movies.Runtime'   
-    'Set.Movies.Writer'   
-    'Set.Movies.Director'   
-    'Set.Movies.Genre'   
-    'Set.Movies.Years'   
-    'Set.Movies.Count' 
+    'SkinInfo.Set.Movie.%d.Art(clearlogo)' % i
+    'SkinInfo.Set.Movie.%d.Art(fanart)' % i
+    'SkinInfo.Set.Movie.%d.Art(poster)' % i
+    'SkinInfo.Set.Movie.%d.Art(discart)' % i
+    'SkinInfo.Set.Movies.Plot'
+    'SkinInfo.Set.Movies.ExtendedPlot'
+    'SkinInfo.Set.Movies.Runtime'
+    'SkinInfo.Set.Movies.Writer'
+    'SkinInfo.Set.Movies.Director'
+    'SkinInfo.Set.Movies.Genre'
+    'SkinInfo.Set.Movies.Years'
+    'SkinInfo.Set.Movies.Count'
 
 For movie years, directors, actors, genres, studios countries and tags:
 Window(home).Property(...)
-    'Detail.Movie.%d.Art(poster)' % i
-    'Detail.Movie.%d.Art(fanart)' % i
-    'Detail.Movie.%d.Path' % i
+    'SkinInfo.Detail.Movie.%d.Art(poster)' % i
+    'SkinInfo.Detail.Movie.%d.Art(fanart)' % i
+    'SkinInfo.Detail.Movie.%d.Path' % i
 
 For movies:
 Window(movieinformation).Property(...)
-    AudioLanguage.%d' % i
-    AudioCodec.%d' % i
-    AudioChannels.%d' % i
-    SubtitleLanguage.%d' % i
+    'SkinInfo.AudioLanguage.%d' % i
+    'SkinInfo.AudioCodec.%d' % i
+    'SkinInfo.AudioChannels.%d' % i
+    'SkinInfo.SubtitleLanguage.%d' % i
