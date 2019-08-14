@@ -27,7 +27,7 @@ class Daemon:
         self.previousitem = ""
         log("starting backend")
         while (not self._stop) and (not xbmc.abortRequested):
-            if xbmc.getCondVisibility("Container.Content(movies) | Container.Content(sets) | ListItem.IsCollection | String.IsEqual(ListItem.DBTYPE,set | Container.Content(artists) | Container.Content(albums) | Container.Content(episodes) | Container.Content(musicvideos)"):
+            if xbmc.getCondVisibility("Container.Content(movies) | Container.Content(sets) | ListItem.IsCollection | String.IsEqual(ListItem.DBTYPE,set) | Container.Content(artists) | Container.Content(albums) | Container.Content(episodes) | Container.Content(musicvideos)"):
                 self.selecteditem = xbmc.getInfoLabel("ListItem.DBID")
                 if (self.selecteditem != self.previousitem):
                     self.previousitem = self.selecteditem
