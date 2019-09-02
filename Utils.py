@@ -4,10 +4,10 @@ import xbmcgui
 import os
 import sys
 import json as simplejson
-if sys.version_info < (2, 9):
-    import urllib, urllib2
-else:
+if sys.version_info.major == 3:
     import urllib.request, urllib.parse, urllib.error
+else:
+    import urllib, urllib2
 
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo('id')
@@ -17,10 +17,10 @@ INFODIALOG = xbmcgui.Window(12003)
 
 def Get_JSON_response(query):
     json_response = xbmc.executeJSONRPC(query)
-    if sys.version_info < (2, 9):
-        json_response = unicode(json_response, 'utf-8', errors='ignore')
-    else:
+    if sys.version_info.major == 3:
         json_response = json_response
+    else:
+        json_response = unicode(json_response, 'utf-8', errors='ignore')
     return simplejson.loads(json_response)
 
 
@@ -101,16 +101,15 @@ def media_path(path):
 
 
 def log(txt):
-    try:
-        if isinstance(txt, str):
-            txt = txt.decode("utf-8")
-    except AttributeError:
-        pass
+    if not isinstance (txt, str):
+        txt = txt.decode("utf-8")
+
     message = u'%s: %s' % (ADDON_ID, txt)
-    try:
-        xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGDEBUG)
-    except TypeError:
+
+    if sys.version_info.major == 3:
         xbmc.log(msg=message, level=xbmc.LOGDEBUG)
+    else:
+        xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGDEBUG)
 
 
 def GetStringFromUrl(encurl):
@@ -161,6 +160,9 @@ def set_artist_properties(audio):
     HOME.setProperty('SkinInfo.Artist.Albums.Count', str(audio['result']['limits']['total']))
     HOME.setProperty('SkinInfo.Artist.Albums.Playcount', str(playcount))
 
+    if ADDON.getSetting("enable_debug_json") == "true":
+        prettyprint(audio)
+
 
 def set_album_properties(json_response):
     count = 1
@@ -182,6 +184,9 @@ def set_album_properties(json_response):
     HOME.setProperty('SkinInfo.Album.Songs.Duration', str(minutes).zfill(2) + ":" + str(seconds).zfill(2))
     HOME.setProperty('SkinInfo.Album.Songs.Tracklist', tracklist)
     HOME.setProperty('SkinInfo.Album.Songs.Count', str(json_response['result']['limits']['total']))
+
+    if ADDON.getSetting("enable_debug_json") == "true":
+        prettyprint(json_response)
 
 
 def set_movie_properties(json_response):
@@ -246,6 +251,9 @@ def set_movie_properties(json_response):
     HOME.setProperty('SkinInfo.Set.Movies.Studio', " / ".join(studio))
     HOME.setProperty('SkinInfo.Set.Movies.Years', " / ".join(years))
     HOME.setProperty('SkinInfo.Set.Movies.Count', str(json_response['result']['setdetails']['limits']['total']))
+
+    if ADDON.getSetting("enable_debug_json") == "true":
+        prettyprint(json_response)
 
 
 def clear_properties():
