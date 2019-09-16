@@ -218,6 +218,11 @@ def set_movie_properties(json_response):
         HOME.setProperty('SkinInfo.Set.Movie.%d.Art(poster)' % count, art.get('poster', ''))
         HOME.setProperty('SkinInfo.Detail.Movie.%d.Art(fanart)' % count, art.get('fanart', ''))  # hacked in
         HOME.setProperty('SkinInfo.Detail.Movie.%d.Art(poster)' % count, art.get('poster', ''))
+
+        if studio:
+            studio_list = studio[0]
+            HOME.setProperty('SkinInfo.Set.Movies.Single.Studio', studio_list)
+
         title_list += "[I]" + item['label'] + " (" + str(item['year']) + ")[/I][CR]"
         if item['plotoutline']:
             plot += "[B]" + item['label'] + " (" + str(item['year']) + ")[/B][CR]" + item['plotoutline'] + "[CR][CR]"
