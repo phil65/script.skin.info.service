@@ -198,6 +198,7 @@ def set_movie_properties(json_response):
     country = []
     studio = []
     years = []
+    mpaa = ""
     plot = ""
     title_list = ""
     title_header = "[B]" + str(json_response['result']['setdetails']['limits']['total']) + " " + xbmc.getLocalizedString(20342) + "[/B][CR]"
@@ -218,10 +219,10 @@ def set_movie_properties(json_response):
         HOME.setProperty('SkinInfo.Set.Movie.%d.Art(poster)' % count, art.get('poster', ''))
         HOME.setProperty('SkinInfo.Detail.Movie.%d.Art(fanart)' % count, art.get('fanart', ''))  # hacked in
         HOME.setProperty('SkinInfo.Detail.Movie.%d.Art(poster)' % count, art.get('poster', ''))
+        HOME.setProperty('SkinInfo.Set.Movie.%d.MPAA' % count, item['mpaa'])
 
         if studio:
-            studio_list = studio[0]
-            HOME.setProperty('SkinInfo.Set.Movies.Single.Studio', studio_list)
+            HOME.setProperty('SkinInfo.Set.Movies.Single.Studio', studio[0])
 
         title_list += "[I]" + item['label'] + " (" + str(item['year']) + ")[/I][CR]"
         if item['plotoutline']:
