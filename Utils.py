@@ -198,7 +198,6 @@ def set_movie_properties(json_response):
     country = []
     studio = []
     years = []
-    mpaa = ""
     plot = ""
     title_list = ""
     title_header = "[B]" + str(json_response['result']['setdetails']['limits']['total']) + " " + xbmc.getLocalizedString(20342) + "[/B][CR]"
