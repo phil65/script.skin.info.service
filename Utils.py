@@ -128,7 +128,7 @@ def set_artist_properties(audio):
         HOME.setProperty('SkinInfo.Artist.Album.%d.DBID' % count, str(item.get('albumid')))
         HOME.setProperty('SkinInfo.Artist.Album.%d.Label' % count, item['albumlabel'])
         HOME.setProperty('SkinInfo.Artist.Album.%d.Art(discart)' % count, art.get('discart', ''))
-        HOME.setProperty('SkinInfo.Artist.Album.%d.Art(thumb)' % count, art.get('artist.thumb', ''))
+        HOME.setProperty('SkinInfo.Artist.Album.%d.Art(thumb)' % count, art.get('thumb', ''))
         if item['playcount']:
             playcount = playcount + item['playcount']
         if item['year'] > latestyear:
