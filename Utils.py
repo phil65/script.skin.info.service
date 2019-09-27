@@ -112,26 +112,6 @@ def log(txt):
         xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGDEBUG)
 
 
-def GetStringFromUrl(encurl):
-    succeed = 0
-    while succeed < 5:
-        try:
-            req = urllib2.Request(encurl)
-            req.add_header('User-agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-            res = urllib2.urlopen(req)
-            html = res.read()
-            return html
-        except:
-            log("GetStringFromURL: could not get data from %s" % encurl)
-            xbmc.sleep(1000)
-            succeed += 1
-    return ""
-
-
-def Notify(header, line='', line2='', line3=''):
-    xbmcgui.Dialog().notification(('%s, %s, %s, %s') % (header, line, line2, line3))
-
-
 def prettyprint(string):
     log(simplejson.dumps(string, sort_keys=True, indent=4, separators=(',', ': ')))
 
@@ -142,11 +122,13 @@ def set_artist_properties(audio):
     firstyear = 0
     playcount = 0
     for item in audio['result']['albums']:
+        art = item['art']
         HOME.setProperty('SkinInfo.Artist.Album.%d.Title' % count, item['title'])
         HOME.setProperty('SkinInfo.Artist.Album.%d.Year' % count, str(item['year']))
-        HOME.setProperty('SkinInfo.Artist.Album.%d.Thumb' % count, item['thumbnail'])
         HOME.setProperty('SkinInfo.Artist.Album.%d.DBID' % count, str(item.get('albumid')))
         HOME.setProperty('SkinInfo.Artist.Album.%d.Label' % count, item['albumlabel'])
+        HOME.setProperty('SkinInfo.Artist.Album.%d.Art(discart)' % count, art.get('discart', ''))
+        HOME.setProperty('SkinInfo.Artist.Album.%d.Art(thumb)' % count, art.get('artist.thumb', ''))
         if item['playcount']:
             playcount = playcount + item['playcount']
         if item['year'] > latestyear:
@@ -294,6 +276,8 @@ def clear_properties():
             HOME.clearProperty('SkinInfo.Artist.Album.%d.Duration' % i)
             HOME.clearProperty('SkinInfo.Artist.Album.%d.Thumb' % i)
             HOME.clearProperty('SkinInfo.Artist.Album.%d.ID' % i)
+            HOME.clearProperty('SkinInfo.Artist.Album.%d.Art(discart)' % i)
+            HOME.clearProperty('SkinInfo.Artist.Album.%d.Art(thumb)' % i)
             HOME.clearProperty('SkinInfo.Album.Song.%d.Title' % i)
             HOME.clearProperty('SkinInfo.Album.Song.%d.FileExtension' % i)
             HOME.clearProperty('SkinInfo.Detail.Music.%d.Art(fanart)' % i)
@@ -314,17 +298,37 @@ def clear_properties():
         HOME.clearProperty('SkinInfo.Album.Songs.Count')
 
 
-def passDataToSkin(name, data, prefix="", debug=False):
-    if data is not None:
-       # log( "%s%s.Count = %s" % (prefix, name, str(len(data)) ) )
-        for (count, result) in enumerate(data):
-            if debug:
-                log("%s%s.%i = %s" % (prefix, name, count + 1, str(result)))
-            for (key, value) in result.iteritems():
-                HOME.setProperty('SkinInfo.%s%s.%i.%s' % (prefix, name, count + 1, str(key)), unicode(value))
-                if debug:
-                    log('%s%s.%i.%s --> ' % (prefix, name, count + 1, str(key)) + unicode(value))
-        HOME.setProperty('SkinInfo.%s%s.Count' % (prefix, name), str(len(data)))
-    else:
-        HOME.setProperty('SkinInfo.%s%s.Count' % (prefix, name), '0')
-        log("%s%s.Count = None" % (prefix, name))
+# def Notify(header, line='', line2='', line3=''):
+#     xbmcgui.Dialog().notification(('%s, %s, %s, %s') % (header, line, line2, line3))
+
+
+# def GetStringFromUrl(encurl):
+#     succeed = 0
+#     while succeed < 5:
+#         try:
+#             req = urllib2.Request(encurl)
+#             req.add_header('User-agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
+#             res = urllib2.urlopen(req)
+#             html = res.read()
+#             return html
+#         except:
+#             log("GetStringFromURL: could not get data from %s" % encurl)
+#             xbmc.sleep(1000)
+#             succeed += 1
+#     return ""
+
+
+# def passDataToSkin(name, data, prefix="", debug=False):
+#     if data is not None:
+#        # log( "%s%s.Count = %s" % (prefix, name, str(len(data)) ) )
+#         for (count, result) in enumerate(data):
+#             if debug:
+#                 log("%s%s.%i = %s" % (prefix, name, count + 1, str(result)))
+#             for (key, value) in result.iteritems():
+#                 HOME.setProperty('SkinInfo.%s%s.%i.%s' % (prefix, name, count + 1, str(key)), unicode(value))
+#                 if debug:
+#                     log('%s%s.%i.%s --> ' % (prefix, name, count + 1, str(key)) + unicode(value))
+#         HOME.setProperty('SkinInfo.%s%s.Count' % (prefix, name), str(len(data)))
+#     else:
+#         HOME.setProperty('SkinInfo.%s%s.Count' % (prefix, name), '0')
+#         log("%s%s.Count = None" % (prefix, name))

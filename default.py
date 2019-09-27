@@ -77,15 +77,15 @@ class Daemon:
                 clear_properties()
                 self._stop = True
             xbmc.sleep(100)
-
-    def _set_song_details(self, dbid):  # unused, needs fixing
-        json_response = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMusicVideos", "params": {"properties": ["artist", "file"], "sort": { "method": "artist" } }, "id": 1}')
-        clear_properties()
-        if ("result" in json_response) and ('musicvideos' in json_response['result']):
-            set_movie_properties(json_query)
+    # unused, needs fixing
+    # def _set_song_details(self, dbid):
+    #     json_response = xbmc.executeJSONRPC('{"jsonrpc": "2.0", "method": "VideoLibrary.GetMusicVideos", "params": {"properties": ["artist", "file"], "sort": { "method": "artist" } }, "id": 1}')
+    #     clear_properties()
+    #     if ("result" in json_response) and ('musicvideos' in json_response['result']):
+    #         set_movie_properties(json_query)
 
     def _set_artist_details(self, dbid):
-        json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbums", "params": {"properties": ["title", "year", "albumlabel", "playcount", "thumbnail"], "sort": { "method": "label" }, "filter": {"artistid": %s} }, "id": 1}' % dbid)
+        json_response = Get_JSON_response('{"jsonrpc": "2.0", "method": "AudioLibrary.GetAlbums", "params": {"properties": ["title", "year", "albumlabel", "playcount", "art"], "sort": { "method": "label" }, "filter": {"artistid": %s} }, "id": 1}' % dbid)
         clear_properties()
         if ("result" in json_response) and ('albums' in json_response['result']):
             set_artist_properties(json_response)

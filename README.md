@@ -11,7 +11,8 @@ Properties will be available in the corresponding media windows.
 -   'SkinInfo.Artist.Album.%d.PlotOutline' % i
 -   'SkinInfo.Artist.Album.%d.Year' % i
 -   'SkinInfo.Artist.Album.%d.Duration' % i
--   'SkinInfo.Artist.Album.%d.Thumb' % i
+-   'SkinInfo.Artist.Album.%d.Art(discart)' % i
+-   'SkinInfo.Artist.Album.%d.Art(thumb)' % i
 -   'SkinInfo.Artist.Album.%d.DBID' % i
 -   'SkinInfo.Artist.Albums.Newest'
 -   'SkinInfo.Artist.Albums.Oldest'
@@ -37,6 +38,7 @@ Properties will be available in the corresponding media windows.
 -   'SkinInfo.Set.Movie.%d.Art(fanart)' % i
 -   'SkinInfo.Set.Movie.%d.Art(poster)' % i
 -   'SkinInfo.Set.Movie.%d.Art(discart)' % i
+-   'SkinInfo.Set.Movie.%d.MPAA' % i
 -   'SkinInfo.Set.Movies.List'
 -   'SkinInfo.Set.Movies.Plot'
 -   'SkinInfo.Set.Movies.PlotOutline'
