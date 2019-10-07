@@ -33,7 +33,7 @@ Properties will be available in the corresponding media windows.
 -   'SkinInfo.Set.Movie.%d.Path' % i
 -   'SkinInfo.Set.Movie.%d.Year' % i
 -   'SkinInfo.Set.Movie.%d.Duration' % i
--   SkinInfo.Set.Movie.%d.VideoResolution' % i
+-   'SkinInfo.Set.Movie.%d.VideoResolution' % i
 -   'SkinInfo.Set.Movie.%d.Art(clearlogo)' % i
 -   'SkinInfo.Set.Movie.%d.Art(fanart)' % i
 -   'SkinInfo.Set.Movie.%d.Art(poster)' % i
@@ -52,10 +52,10 @@ Properties will be available in the corresponding media windows.
 -   'SkinInfo.Set.Movies.Studio'
 -   'SkinInfo.Set.Movies.Single.Studio'
 -   'SkinInfo.Set.Movies.Country'
-<!-- -   'SkinInfo.Detail.Movie.%d.Art(fanart)' % i -->
-<!-- -   'SkinInfo.Detail.Movie.%d.Art(poster)' % i -->
 
 ### For Movie Years, Directors, Actors, Genres, Studios, Countries and Tags
+-   'SkinInfo.Detail.Movie.%d.Path' % i
+-   'SkinInfo.Detail.Movie.%d.Art(fanart)' % i
 -   'SkinInfo.Detail.Movie.%d.Art(poster)' % i
 -   'SkinInfo.Detail.Movie.%d.Art(fanart)' % i
 -   'SkinInfo.Detail.Movie.%d.Path' % i

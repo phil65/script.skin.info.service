@@ -4,10 +4,14 @@ import xbmcgui
 import os
 import sys
 import json as simplejson
+
 if sys.version_info.major == 3:
-    import urllib.request, urllib.parse, urllib.error
+    import urllib.request
+    import urllib.parse
+    import urllib.error
 else:
-    import urllib, urllib2
+    import urllib
+    # import urllib2
 
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo('id')
@@ -45,6 +49,8 @@ def media_streamdetails(filename, streamdetails):
             info['videoresolution'] = "1080"
         elif (videowidth <= 3840 or videoheight <= 2160):
             info['videoresolution'] = "4k"
+        elif (videowidth <= 7680 or videoheight <= 4320):
+            info['videoresolution'] = "8k"
         else:
             info['videoresolution'] = ""
     elif (('dvd') in filename and not ('hddvd' or 'hd-dvd') in filename) or (filename.endswith('.vob' or '.ifo')):
@@ -136,7 +142,7 @@ def set_artist_properties(audio):
         if firstyear == 0 or item['year'] < firstyear:
             firstyear = item['year']
         count += 1
-    if firstyear > 0 and latestyear < 2020:
+    if firstyear > 0 and latestyear < 2030:
         HOME.setProperty('SkinInfo.Artist.Albums.Newest', str(latestyear))
         HOME.setProperty('SkinInfo.Artist.Albums.Oldest', str(firstyear))
     HOME.setProperty('SkinInfo.Artist.Albums.Count', str(audio['result']['limits']['total']))
@@ -198,8 +204,6 @@ def set_movie_properties(json_response):
         HOME.setProperty('SkinInfo.Set.Movie.%d.Art(discart)' % count, art.get('discart', ''))
         HOME.setProperty('SkinInfo.Set.Movie.%d.Art(fanart)' % count, art.get('fanart', ''))
         HOME.setProperty('SkinInfo.Set.Movie.%d.Art(poster)' % count, art.get('poster', ''))
-        HOME.setProperty('SkinInfo.Detail.Movie.%d.Art(fanart)' % count, art.get('fanart', ''))  # hacked in
-        HOME.setProperty('SkinInfo.Detail.Movie.%d.Art(poster)' % count, art.get('poster', ''))
         HOME.setProperty('SkinInfo.Set.Movie.%d.MPAA' % count, item['mpaa'])
 
         if studio:
