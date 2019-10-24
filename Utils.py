@@ -148,7 +148,7 @@ def set_artist_properties(audio):
     HOME.setProperty('SkinInfo.Artist.Albums.Count', str(audio['result']['limits']['total']))
     HOME.setProperty('SkinInfo.Artist.Albums.Playcount', str(playcount))
 
-    if ADDON.getSetting("enable_debug_json") == "true":
+    if ADDON.getSettingBool("enable_debug_json"):
         prettyprint(audio)
 
 
@@ -173,7 +173,7 @@ def set_album_properties(json_response):
     HOME.setProperty('SkinInfo.Album.Songs.Tracklist', tracklist)
     HOME.setProperty('SkinInfo.Album.Songs.Count', str(json_response['result']['limits']['total']))
 
-    if ADDON.getSetting("enable_debug_json") == "true":
+    if ADDON.getSettingBool("enable_debug_json"):
         prettyprint(json_response)
 
 
@@ -243,7 +243,7 @@ def set_movie_properties(json_response):
     HOME.setProperty('SkinInfo.Set.Movies.Years', " / ".join(years))
     HOME.setProperty('SkinInfo.Set.Movies.Count', str(json_response['result']['setdetails']['limits']['total']))
 
-    if ADDON.getSetting("enable_debug_json") == "true":
+    if ADDON.getSettingBool("enable_debug_json"):
         prettyprint(json_response)
 
 
@@ -300,39 +300,3 @@ def clear_properties():
         HOME.clearProperty('SkinInfo.Album.Songs.Discs')
         HOME.clearProperty('SkinInfo.Album.Songs.Duration')
         HOME.clearProperty('SkinInfo.Album.Songs.Count')
-
-
-# def Notify(header, line='', line2='', line3=''):
-#     xbmcgui.Dialog().notification(('%s, %s, %s, %s') % (header, line, line2, line3))
-
-
-# def GetStringFromUrl(encurl):
-#     succeed = 0
-#     while succeed < 5:
-#         try:
-#             req = urllib2.Request(encurl)
-#             req.add_header('User-agent', 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3')
-#             res = urllib2.urlopen(req)
-#             html = res.read()
-#             return html
-#         except:
-#             log("GetStringFromURL: could not get data from %s" % encurl)
-#             xbmc.sleep(1000)
-#             succeed += 1
-#     return ""
-
-
-# def passDataToSkin(name, data, prefix="", debug=False):
-#     if data is not None:
-#        # log( "%s%s.Count = %s" % (prefix, name, str(len(data)) ) )
-#         for (count, result) in enumerate(data):
-#             if debug:
-#                 log("%s%s.%i = %s" % (prefix, name, count + 1, str(result)))
-#             for (key, value) in result.iteritems():
-#                 HOME.setProperty('SkinInfo.%s%s.%i.%s' % (prefix, name, count + 1, str(key)), unicode(value))
-#                 if debug:
-#                     log('%s%s.%i.%s --> ' % (prefix, name, count + 1, str(key)) + unicode(value))
-#         HOME.setProperty('SkinInfo.%s%s.Count' % (prefix, name), str(len(data)))
-#     else:
-#         HOME.setProperty('SkinInfo.%s%s.Count' % (prefix, name), '0')
-#         log("%s%s.Count = None" % (prefix, name))
