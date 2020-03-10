@@ -27,6 +27,18 @@ class Daemon:
         self.previousitem = ""
         log("starting backend")
         while (not self._stop) and (not xbmc.abortRequested):
+            if xbmc.getCondVisibility("[Window.IsActive(videoosd) + Skin.String(SkinInfo.AutoCloseVideoOSD)] | [Window.IsActive(musicosd) + Skin.String(SkinInfo.AutoCloseMusicOSD)]"):
+                if xbmc.getCondVisibility("Window.IsActive(videoosd)"):
+                    seconds = xbmc.getInfoLabel("Skin.String(SkinInfo.AutoCloseVideoOSD)")
+                    window = "videoosd"
+                elif xbmc.getCondVisibility("Window.IsActive(musicosd)"):
+                    seconds = xbmc.getInfoLabel("Skin.String(SkinInfo.AutoCloseMusicOSD)")
+                    window = "musicosd"
+                else:
+                    seconds = ""
+                if seconds and seconds != "0" and xbmc.getCondVisibility("System.IdleTime(%s)" % seconds) and xbmc.getCondVisibility("Window.IsActive(%s)" % window):
+                    xbmc.executebuiltin("Dialog.Close(%s)" % window)
+
             if xbmc.getCondVisibility("Container.Content(movies) | Container.Content(sets) | ListItem.IsCollection | String.IsEqual(ListItem.DBTYPE,set) | Container.Content(artists) | Container.Content(albums) | Container.Content(episodes) | Container.Content(musicvideos)"):
                 self.selecteditem = xbmc.getInfoLabel("ListItem.DBID")
                 if (self.selecteditem != self.previousitem):
@@ -48,6 +60,7 @@ class Daemon:
                             clear_properties()
                     else:
                         clear_properties()
+
             elif xbmc.getCondVisibility("Container.Content(seasons) + !Window.IsActive(movieinformation)"):
                 HOME.setProperty("SeasonPoster", xbmc.getInfoLabel("ListItem.Icon"))
                 HOME.setProperty("SeasonID", xbmc.getInfoLabel("ListItem.DBID"))
