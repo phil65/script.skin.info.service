@@ -4,14 +4,9 @@ import xbmcgui
 import os
 import sys
 import json as simplejson
-
-if sys.version_info.major == 3:
-    import urllib.request
-    import urllib.parse
-    import urllib.error
-else:
-    import urllib
-    # import urllib2
+import urllib.request
+import urllib.parse
+import urllib.error
 
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo('id')
@@ -21,10 +16,6 @@ INFODIALOG = xbmcgui.Window(12003)
 
 def Get_JSON_response(query):
     json_response = xbmc.executeJSONRPC(query)
-    if sys.version_info.major == 3:
-        json_response = json_response
-    else:
-        json_response = unicode(json_response, 'utf-8', errors='ignore')
     return simplejson.loads(json_response)
 
 
@@ -109,13 +100,8 @@ def media_path(path):
 def log(txt):
     if not isinstance (txt, str):
         txt = txt.decode("utf-8")
-
     message = u'%s: %s' % (ADDON_ID, txt)
-
-    if sys.version_info.major == 3:
-        xbmc.log(msg=message, level=xbmc.LOGDEBUG)
-    else:
-        xbmc.log(msg=message.encode("utf-8"), level=xbmc.LOGDEBUG)
+    xbmc.log(msg=message, level=xbmc.LOGDEBUG)
 
 
 def prettyprint(string):
