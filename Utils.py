@@ -5,8 +5,6 @@ import os
 import sys
 import json as simplejson
 import urllib.request
-import urllib.parse
-import urllib.error
 
 ADDON = xbmcaddon.Addon()
 ADDON_ID = ADDON.getAddonInfo('id')
@@ -86,12 +84,12 @@ def media_path(path):
         path = os.path.split(path)[0]
     # Fixes problems with rared movies and multipath
     if path.startswith("rar://"):
-        path = [os.path.split(urllib.url2pathname(path.replace("rar://", "")))[0]]
+        path = [os.path.split(urllib.request.url2pathname(path.replace("rar://", "")))[0]]
     elif path.startswith("multipath://"):
         temp_path = path.replace("multipath://", "").split('%2f/')
         path = []
         for item in temp_path:
-            path.append(urllib.url2pathname(item))
+            path.append(urllib.request.url2pathname(item))
     else:
         path = [path]
     return path[0]
