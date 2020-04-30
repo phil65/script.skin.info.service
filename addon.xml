@@ -11,8 +11,8 @@
 		<summary lang="en_GB">Script used by skins to show extended media info.</summary>
 		<description lang="en_GB">This script fetches extended information for several media types (artists, albums, movie sets etc.). Needs skin support.</description>
 		<platform>all</platform>
-		<license>GNU GENERAL PUBLIC LICENSE Version 2, June 1991</license>
-		<forum>http://forum.kodi.tv/showthread.php?tid=210069</forum>
+		<license>GPL-2.0-only</license>
+		<forum>https://forum.kodi.tv/showthread.php?tid=210069</forum>
 		<source>https://github.com/mikesilvo164/script.skin.info.service</source>
 		<assets>
 			<icon>icon.png</icon>

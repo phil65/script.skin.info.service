@@ -3,7 +3,7 @@ import xbmcaddon
 import xbmcgui
 import os
 import sys
-import json as simplejson
+import json
 import urllib.request
 
 ADDON = xbmcaddon.Addon()
@@ -14,7 +14,7 @@ INFODIALOG = xbmcgui.Window(12003)
 
 def Get_JSON_response(query):
     json_response = xbmc.executeJSONRPC(query)
-    return simplejson.loads(json_response)
+    return json.loads(json_response)
 
 
 def media_streamdetails(filename, streamdetails):
@@ -103,7 +103,7 @@ def log(txt):
 
 
 def prettyprint(string):
-    log(simplejson.dumps(string, sort_keys=True, indent=4, separators=(',', ': ')))
+    log(json.dumps(string, sort_keys=True, indent=4, separators=(',', ': ')))
 
 
 def set_artist_properties(audio):

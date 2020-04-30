@@ -80,7 +80,7 @@ class Daemon:
                     if (self.selecteditem != "") and xbmc.getCondVisibility("!ListItem.IsParentFolder"):
                         self.setMusicDetailsforCategory()
             elif xbmc.getCondVisibility('Window.IsActive(screensaver)'):
-                xbmc.sleep(1000)
+                xbmc.Monitor().waitForAbort(1)
             else:
                 self.previousitem = ""
                 self.selecteditem = ""
