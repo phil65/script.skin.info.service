@@ -15,6 +15,7 @@ class Daemon:
     def __init__(self):
         log("version %s started" % ADDON_VERSION)
         self._init_vars()
+        self.ssis_monitor = xbmc.Monitor()
         self.run_backend()
 
     def _init_vars(self):
@@ -26,7 +27,7 @@ class Daemon:
         self._stop = False
         self.previousitem = ""
         log("starting backend")
-        while (not self._stop) and (not xbmc.Monitor().abortRequested()):
+        while (not self._stop) and (not self.ssis_monitor.abortRequested()):
             if xbmc.getCondVisibility("[Window.IsActive(videoosd) + Skin.String(SkinInfo.AutoCloseVideoOSD)] | [Window.IsActive(musicosd) + Skin.String(SkinInfo.AutoCloseMusicOSD)]"):
                 if xbmc.getCondVisibility("Window.IsActive(videoosd)"):
                     seconds = xbmc.getInfoLabel("Skin.String(SkinInfo.AutoCloseVideoOSD)")
